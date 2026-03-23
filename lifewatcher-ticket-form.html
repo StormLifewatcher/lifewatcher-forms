@@ -803,6 +803,15 @@
 
 <script>
 // ════════════════════════════════════════════════════════
+//  TRANSCRIPT ONTVANGEN VAN VOICEFLOW EXTENSION
+// ════════════════════════════════════════════════════════
+window.addEventListener('message', function(event) {
+  if (event.data?.type === 'lw_set_transcript') {
+    state.transcript = event.data.transcript || '';
+  }
+});
+
+// ════════════════════════════════════════════════════════
 //  CONFIG – vervang deze URLs met uw eigen n8n webhooks
 // ════════════════════════════════════════════════════════
 const CONFIG = {
@@ -1235,6 +1244,7 @@ async function submitForm() {
     alt_mode:    state.showingAlt ? state.altMode : null,
     ticket_type: state.ticketType,
     order_number: v('order_number'),
+    transcript: state.transcript,
     category:    state.category,
     description: desc,
     source:      'chatbot-form',
