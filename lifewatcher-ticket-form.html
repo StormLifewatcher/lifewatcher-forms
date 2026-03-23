@@ -797,11 +797,13 @@ const CONFIG = {
   // Geeft terug: { success: true, ticket_id: "12345" }
   SUBMIT_URL:   'https://n8n.srv897125.hstgr.cloud/webhook/create-ticket',
 
+  // Geheime token — moet exact overeenkomen met SECRET in beide n8n workflows
+  SECRET_TOKEN: 'lw-2024-xK9mP3qR7vN2',
+
   // Voiceflow variabelen die worden ingevuld na submit
-  // (via postMessage naar parent Voiceflow iframe)
   VF_VARIABLES: true,
 
-  // Demo-modus: zet op false als uw API klaar is
+  // Demo-modus
   DEMO_MODE: false,
 };
 
@@ -906,7 +908,10 @@ async function validateSerial() {
     } else {
       const res = await fetch(CONFIG.VALIDATE_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-lw-token': CONFIG.SECRET_TOKEN,
+        },
         body: JSON.stringify({ serial_number: serial }),
       });
       result = await res.json();
@@ -1079,7 +1084,10 @@ async function submitForm() {
     if (!CONFIG.DEMO_MODE) {
       const res = await fetch(CONFIG.SUBMIT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-lw-token': CONFIG.SECRET_TOKEN,
+        },
         body: JSON.stringify(payload),
       });
       const data = await res.json();
