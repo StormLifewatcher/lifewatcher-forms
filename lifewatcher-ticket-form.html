@@ -790,19 +790,19 @@ const CONFIG = {
   // Webhook om toestelnummer te valideren in uw database
   // Verwacht: POST { serial_number: "1703854175" }
   // Geeft terug: { exists: true/false, device_name?: "Senior 4G" }
-  VALIDATE_URL: 'https://jouw-n8n.nl/webhook/validate-device',
+  VALIDATE_URL: 'https://n8n.srv897125.hstgr.cloud/webhook/validate-device-form',
 
   // Webhook om ticket aan te maken (naar Zendesk via n8n)
   // Verwacht: POST { name, email, phone, serial, alt_sim, alt_email, category, description, ... }
   // Geeft terug: { success: true, ticket_id: "12345" }
-  SUBMIT_URL:   'https://jouw-n8n.nl/webhook/create-ticket',
+  SUBMIT_URL:   'https://n8n.srv897125.hstgr.cloud/webhook/create-ticket',
 
   // Voiceflow variabelen die worden ingevuld na submit
   // (via postMessage naar parent Voiceflow iframe)
   VF_VARIABLES: true,
 
   // Demo-modus: zet op false als uw API klaar is
-  DEMO_MODE: true,
+  DEMO_MODE: false,
 };
 
 // ════════════════════════════════════════════════════════
