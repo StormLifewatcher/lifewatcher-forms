@@ -859,20 +859,51 @@ function goStep2() {
 async function goStep3() {
   const serial = document.getElementById('serial').value.trim();
 
-  // Als de klant in alt-modus zit: toestelnummer niet verplicht
   if (!state.showingAlt) {
     if (!serial) {
       showErr('err-serial', true, 'Vul het toestelnummer in of kies de optie hieronder.');
       return;
     }
-    if (state.serialValid === null) {
-      await validateSerial();
+    if (state.serialValid === null) await validateSerial();
+    if (state.serialValid === false) return;
+  } else {
+    const altVal = state.altMode === 'sim' ? v('sim_number') : v('email_alt');
+    if (!altVal) {
+      document.getElementById(state.altMode === 'sim' ? 'sim_number' : 'email_alt').focus();
+      return;
     }
-    if (state.serialValid === false) return; // blokkeer voortgang
+    await validateAlt(state.altMode, altVal);
+    if (state.serialValid === false) return;
   }
 
   updateSummary();
   goStep(3);
+}
+
+async function validateAlt(mode, value) {
+  showBadge('warn', 'Gegevens worden gecontroleerd...');
+  try {
+    const body = mode === 'sim' ? { sim_number: value } : { email: value };
+    const res = await fetch(CONFIG.VALIDATE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-lw-token': CONFIG.SECRET_TOKEN },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (data.exists) {
+      state.serialValid = true;
+      if (data.serial_number) document.getElementById('serial').value = data.serial_number;
+      showBadge('ok', 'Gegevens gevonden in onze database');
+    } else {
+      state.serialValid = false;
+      showBadge('fail', mode === 'sim'
+        ? 'Telefoonnummer niet gevonden. Controleer het nummer en probeer opnieuw.'
+        : 'E-mailadres niet gevonden. Gebruik het adres waarmee het abonnement is aangemaakt.');
+    }
+  } catch (e) {
+    state.serialValid = true;
+    showBadge('warn', 'Verificatie tijdelijk niet beschikbaar. U kunt toch verder.');
+  }
 }
 
 // ════════════════════════════════════════════════════════
