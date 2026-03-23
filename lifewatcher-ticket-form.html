@@ -608,109 +608,130 @@
 
   <!-- ─────────── STEP 2: TOESTELNUMMER ─────────── -->
   <div class="card" id="step-2" style="display:none">
-    <div class="card-title">Toestelnummer</div>
-    <div class="card-subtitle">Het toestelnummer helpt ons uw melding sneller op te lossen.</div>
+    <div class="card-title">Waar gaat uw melding over?</div>
+    <div class="card-subtitle">Zo kunnen we uw melding sneller verwerken.</div>
 
-    <div class="field">
-      <label for="serial">Toestelnummer</label>
-      <div class="input-with-icon">
-        <input type="text" id="serial" placeholder="bijv. 1703854175"
-               autocomplete="off" oninput="onSerialInput()" onblur="validateSerial()">
-        <span class="input-icon" id="serialIcon">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2m-2 5h8"/>
-          </svg>
-        </span>
-      </div>
-      <div class="validate-badge" id="serialBadge"></div>
-      <div class="field-error" id="err-serial"></div>
+    <!-- TYPE KEUZE -->
+    <div class="pill-group" id="ticketTypeGroup" style="margin-bottom:20px">
+      <div class="pill" id="pill-device"  onclick="selectTicketType('device')">📟 Bestaand toestel</div>
+      <div class="pill" id="pill-delivery" onclick="selectTicketType('delivery')">📦 Levering / bestelling</div>
+      <div class="pill" id="pill-other"   onclick="selectTicketType('other')">💬 Overig</div>
     </div>
+    <div class="field-error show" id="err-ticket-type" style="display:none">Kies één van de opties hierboven.</div>
 
-    <!-- HELP: HOE VIND IK HET TOESTELNUMMER? -->
-    <button class="help-toggle" id="helpToggle" onclick="toggleHelp()">
-      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-        <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
-      </svg>
-      Weet u niet hoe u het toestelnummer vindt?
-      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="margin-left:auto">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-      </svg>
-    </button>
+    <!-- TOESTEL SECTIE -->
+    <div id="section-device" style="display:none">
+      <div class="field">
+        <label for="serial">Toestelnummer</label>
+        <div class="input-with-icon">
+          <input type="text" id="serial" placeholder="bijv. 1703854175"
+                 autocomplete="off" oninput="onSerialInput()" onblur="validateSerial()">
+          <span class="input-icon" id="serialIcon">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2m-2 5h8"/>
+            </svg>
+          </span>
+        </div>
+        <div class="validate-badge" id="serialBadge"></div>
+        <div class="field-error" id="err-serial"></div>
+      </div>
 
-    <div class="help-panel" id="helpPanel">
-      <div class="help-content">
-        <p><strong>Het toestelnummer staat op de sticker aan de achterkant van uw LifeWatcher toestel.</strong></p>
+      <button class="help-toggle" id="helpToggle" onclick="toggleHelp()">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+        </svg>
+        Weet u niet hoe u het toestelnummer vindt?
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="margin-left:auto">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
 
-        <!-- STICKER ILLUSTRATIE -->
-        <div class="sticker-preview">
-          <div class="sticker-box">
-            <div class="highlight-ring"></div>
-            <span class="sn-label">Toestelnummer / S/N</span>
-            <span class="sn-value">1703854175</span>
+      <div class="help-panel" id="helpPanel">
+        <div class="help-content">
+          <p><strong>Het toestelnummer staat op de sticker aan de achterkant van uw LifeWatcher toestel.</strong></p>
+          <div class="sticker-preview">
+            <div class="sticker-box">
+              <div class="highlight-ring"></div>
+              <span class="sn-label">Toestelnummer / S/N</span>
+              <span class="sn-value">1703854175</span>
+            </div>
+            <div class="sticker-caption">← Zo ziet de sticker er uit (achterkant toestel)</div>
           </div>
-          <div class="sticker-caption">← Zo ziet de sticker er uit (achterkant toestel)</div>
+          <ol class="help-steps">
+            <li>Draai uw toestel om</li>
+            <li>Zoek de witte sticker met "Toestelnummer" of "S/N"</li>
+            <li>Voer het 10-cijferige nummer in het veld hierboven in</li>
+          </ol>
+          <a class="help-link" href="https://lifewatcher.nl/toestelnummer" target="_blank" rel="noopener">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+            </svg>
+            Meer hulp: hoe vind ik mijn toestelnummer?
+          </a>
         </div>
+      </div>
 
-        <ol class="help-steps">
-          <li>Draai uw toestel om</li>
-          <li>Zoek de witte sticker met "Toestelnummer" of "S/N"</li>
-          <li>Voer het 10-cijferige nummer in het veld hierboven in</li>
-        </ol>
+      <button class="no-device-btn" id="noDeviceBtn" onclick="showAltPanel()">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Ik heb het toestelnummer niet
+      </button>
 
-        <a class="help-link" href="https://lifewatcher.nl/toestelnummer" target="_blank" rel="noopener">
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-          </svg>
-          Meer hulp: hoe vind ik mijn toestelnummer?
-        </a>
+      <div class="alt-panel" id="altPanel">
+        <hr class="divider">
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:12px; line-height:1.5">
+          Geen probleem. Geef één van de onderstaande gegevens — wij zoeken uw toestel via onze database.
+        </div>
+        <div class="alt-choice">
+          <button class="alt-tab active" id="tab-sim" onclick="switchAlt('sim')">📱 Telefoonnummer toestel</button>
+          <button class="alt-tab" id="tab-email-alt" onclick="switchAlt('email')">✉️ E-mailadres abonnement</button>
+        </div>
+        <div class="alt-field show" id="alt-sim">
+          <label for="sim_number">Telefoonnummer van het LifeWatcher toestel (SIM)</label>
+          <input type="tel" id="sim_number" placeholder="bijv. 06 – 12 34 56 78">
+          <div class="field-hint">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-top:2px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+            Dit is het nummer waarmee het toestel belt of alarm slaat, niet uw eigen nummer.
+          </div>
+        </div>
+        <div class="alt-field" id="alt-email-alt">
+          <label for="email_alt">E-mailadres waarmee het abonnement is aangemaakt</label>
+          <input type="email" id="email_alt" placeholder="uwadres@voorbeeld.nl">
+          <div class="field-hint">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-top:2px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+            Dit is het e-mailadres in de bevestigingsmail van uw bestelling.
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- GEEN TOESTELNUMMER KNOP -->
-    <button class="no-device-btn" id="noDeviceBtn" onclick="showAltPanel()">
-      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-      </svg>
-      Ik heb het toestelnummer niet
-    </button>
-
-    <!-- ALTERNATIEF FORMULIER -->
-    <div class="alt-panel" id="altPanel">
-      <hr class="divider">
-      <div style="font-size:13px; color:var(--text-muted); margin-bottom:12px; line-height:1.5">
-        Geen probleem. Geef één van de onderstaande gegevens — wij zoeken uw toestel via onze database.
-      </div>
-
-      <div class="alt-choice">
-        <button class="alt-tab active" id="tab-sim" onclick="switchAlt('sim')">
-          📱 Telefoonnummer toestel
-        </button>
-        <button class="alt-tab" id="tab-email-alt" onclick="switchAlt('email')">
-          ✉️ E-mailadres abonnement
-        </button>
-      </div>
-
-      <div class="alt-field show" id="alt-sim">
-        <label for="sim_number">Telefoonnummer van het LifeWatcher toestel (SIM)</label>
-        <input type="tel" id="sim_number" placeholder="bijv. 06 – 12 34 56 78">
+    <!-- LEVERING SECTIE -->
+    <div id="section-delivery" style="display:none">
+      <div class="field">
+        <label for="order_number">Ordernummer</label>
+        <div class="input-with-icon">
+          <input type="text" id="order_number" placeholder="bijv. CGNZ018800"
+                 autocomplete="off" oninput="onOrderInput()" onblur="validateOrder()">
+          <span class="input-icon" id="orderIcon">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
+          </span>
+        </div>
+        <div class="validate-badge" id="orderBadge"></div>
+        <div class="field-error" id="err-order"></div>
         <div class="field-hint">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-top:2px;flex-shrink:0">
-            <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
-          </svg>
-          Dit is het nummer waarmee het toestel belt of alarm slaat, niet uw eigen nummer.
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-top:2px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+          Uw ordernummer staat in de bevestigingsmail van uw bestelling.
         </div>
       </div>
+    </div>
 
-      <div class="alt-field" id="alt-email-alt">
-        <label for="email_alt">E-mailadres waarmee het abonnement is aangemaakt</label>
-        <input type="email" id="email_alt" placeholder="uwadres@voorbeeld.nl">
-        <div class="field-hint">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-top:2px;flex-shrink:0">
-            <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
-          </svg>
-          Dit is het e-mailadres in de bevestigingsmail van uw bestelling.
-        </div>
+    <!-- OVERIG: geen extra veld nodig -->
+    <div id="section-other" style="display:none">
+      <div style="background:var(--brand-light); border-radius:var(--radius-sm); padding:14px 16px; border-left:3px solid var(--brand); font-size:13px; color:var(--text); line-height:1.6">
+        U kunt uw melding in de volgende stap omschrijven. We nemen zo snel mogelijk contact met u op.
       </div>
     </div>
 
@@ -725,8 +746,7 @@
     </div>
   </div>
 
-  <!-- ─────────── STEP 3: PROBLEEM ─────────── -->
-  <div class="card" id="step-3" style="display:none">
+<div class="card" id="step-3" style="display:none">
     <div class="card-title">Omschrijf uw melding</div>
     <div class="card-subtitle">Hoe meer detail, hoe sneller wij u kunnen helpen.</div>
 
@@ -795,7 +815,8 @@ const CONFIG = {
   // Webhook om ticket aan te maken (naar Zendesk via n8n)
   // Verwacht: POST { name, email, phone, serial, alt_sim, alt_email, category, description, ... }
   // Geeft terug: { success: true, ticket_id: "12345" }
-  SUBMIT_URL:   'https://n8n.srv897125.hstgr.cloud/webhook/create-ticket',
+  SUBMIT_URL:        'https://n8n.srv897125.hstgr.cloud/webhook/create-ticket',
+  VALIDATE_ORDER_URL: 'https://n8n.srv897125.hstgr.cloud/webhook/validate-order',
 
   // Geheime token — moet exact overeenkomen met SECRET in beide n8n workflows
   SECRET_TOKEN: 'lw-2024-xK9mP3qR7vN2',
@@ -857,27 +878,136 @@ function goStep2() {
 }
 
 async function goStep3() {
-  const serial = document.getElementById('serial').value.trim();
+  if (!state.ticketType) {
+    document.getElementById('err-ticket-type').style.display = 'block';
+    return;
+  }
 
-  if (!state.showingAlt) {
-    if (!serial) {
-      showErr('err-serial', true, 'Vul het toestelnummer in of kies de optie hieronder.');
+  if (state.ticketType === 'device') {
+    const serial = document.getElementById('serial').value.trim();
+    if (!state.showingAlt) {
+      if (!serial) {
+        showErr('err-serial', true, 'Vul het toestelnummer in of kies de optie hieronder.');
+        return;
+      }
+      if (state.serialValid === null) await validateSerial();
+      if (state.serialValid === false) return;
+    } else {
+      const altVal = state.altMode === 'sim' ? v('sim_number') : v('email_alt');
+      if (!altVal) {
+        document.getElementById(state.altMode === 'sim' ? 'sim_number' : 'email_alt').focus();
+        return;
+      }
+      await validateAlt(state.altMode, altVal);
+      if (state.serialValid === false) return;
+    }
+  }
+
+  if (state.ticketType === 'delivery') {
+    const order = v('order_number');
+    if (!order) {
+      showErr('err-order', true, 'Vul uw ordernummer in.');
+      document.getElementById('order_number').classList.add('invalid');
       return;
     }
-    if (state.serialValid === null) await validateSerial();
-    if (state.serialValid === false) return;
-  } else {
-    const altVal = state.altMode === 'sim' ? v('sim_number') : v('email_alt');
-    if (!altVal) {
-      document.getElementById(state.altMode === 'sim' ? 'sim_number' : 'email_alt').focus();
-      return;
-    }
-    await validateAlt(state.altMode, altVal);
-    if (state.serialValid === false) return;
+    if (state.orderValid === null) await validateOrder();
+    if (state.orderValid === false) return;
   }
 
   updateSummary();
   goStep(3);
+}
+
+// ── Ticket type selectie ──────────────────────────────────────
+function selectTicketType(type) {
+  state.ticketType = type;
+  document.getElementById('err-ticket-type').style.display = 'none';
+
+  // Pills
+  ['device','delivery','other'].forEach(t => {
+    document.getElementById('pill-' + t).classList.toggle('selected', t === type);
+  });
+
+  // Secties
+  document.getElementById('section-device').style.display   = type === 'device'   ? 'block' : 'none';
+  document.getElementById('section-delivery').style.display = type === 'delivery' ? 'block' : 'none';
+  document.getElementById('section-other').style.display    = type === 'other'    ? 'block' : 'none';
+}
+
+// ── Order validatie ───────────────────────────────────────────
+let orderTimeout = null;
+
+function onOrderInput() {
+  state.orderValid = null;
+  clearOrderBadge();
+  clearTimeout(orderTimeout);
+  const val = v('order_number');
+  if (val.length >= 4) {
+    orderTimeout = setTimeout(validateOrder, 700);
+  }
+}
+
+async function validateOrder() {
+  const order = v('order_number');
+  if (!order) return;
+
+  setOrderIcon('loading');
+  clearOrderBadge();
+
+  try {
+    const res = await fetch(CONFIG.VALIDATE_ORDER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-lw-token': CONFIG.SECRET_TOKEN },
+      body: JSON.stringify({ order_number: order }),
+    });
+    const data = await res.json();
+
+    if (data.exists) {
+      state.orderValid = true;
+      setOrderIcon('success');
+      showOrderBadge('ok', '✓ Bestelling gevonden');
+      showErr('err-order', false);
+      document.getElementById('order_number').classList.add('valid');
+      document.getElementById('order_number').classList.remove('invalid');
+    } else {
+      state.orderValid = false;
+      setOrderIcon('error');
+      showOrderBadge('fail', '✗ Ordernummer niet gevonden. Controleer uw bevestigingsmail.');
+      document.getElementById('order_number').classList.remove('valid');
+      document.getElementById('order_number').classList.add('invalid');
+    }
+  } catch (e) {
+    state.orderValid = true;
+    setOrderIcon('');
+    showOrderBadge('warn', '⚠ Verificatie tijdelijk niet beschikbaar. U kunt toch verder.');
+  }
+}
+
+function setOrderIcon(type) {
+  const icon = document.getElementById('orderIcon');
+  icon.className = 'input-icon';
+  if (type === 'loading') {
+    icon.className += ' loading';
+    icon.innerHTML = `<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12a8 8 0 018-8v8H4z"/></svg>`;
+  } else if (type === 'success') {
+    icon.className += ' success';
+    icon.innerHTML = `<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`;
+  } else if (type === 'error') {
+    icon.className += ' error';
+    icon.innerHTML = `<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>`;
+  } else {
+    icon.innerHTML = `<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>`;
+  }
+}
+
+function showOrderBadge(type, msg) {
+  const b = document.getElementById('orderBadge');
+  b.className = 'validate-badge show ' + type;
+  b.textContent = msg;
+}
+function clearOrderBadge() {
+  const b = document.getElementById('orderBadge');
+  if (b) { b.className = 'validate-badge'; b.textContent = ''; }
 }
 
 async function validateAlt(mode, value) {
@@ -1056,9 +1186,10 @@ function updateSummary() {
     ['Naam', v('name')],
     ['E-mail', v('email')],
     ['Telefoon', v('phone') || '–'],
-    ['Toestel', v('serial') || (state.showingAlt
+    ['Type', state.ticketType === 'device' ? 'Bestaand toestel' : state.ticketType === 'delivery' ? 'Levering / bestelling' : 'Overig'],
+    ['Toestel', state.ticketType === 'device' ? (v('serial') || (state.showingAlt
       ? (state.altMode === 'sim' ? 'SIM: ' + v('sim_number') : 'E-mail: ' + v('email_alt'))
-      : '–')],
+      : '–')) : (state.ticketType === 'delivery' ? 'Order: ' + v('order_number') : '–')],
     ['Categorie', state.category || '–'],
   ];
   document.getElementById('summaryContent').innerHTML = rows.map(([k, val]) =>
@@ -1103,6 +1234,8 @@ async function submitForm() {
     alt_sim:     v('sim_number'),
     alt_email:   v('email_alt'),
     alt_mode:    state.showingAlt ? state.altMode : null,
+    ticket_type: state.ticketType,
+    order_number: v('order_number'),
     category:    state.category,
     description: desc,
     source:      'chatbot-form',
