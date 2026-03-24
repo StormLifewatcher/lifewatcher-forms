@@ -796,7 +796,8 @@
     <h2>Melding ontvangen!</h2>
     <p>Uw melding is doorgegeven aan ons team.<br>
        U ontvangt een bevestiging op <strong id="confirmEmail">—</strong>.<br><br>
-       Wij nemen zo snel mogelijk contact met u op.</p>
+       Wij nemen zo snel mogelijk contact met u op.<br><br>
+       <span style="font-size:12px;color:var(--text-muted)">Controleer ook uw spambox als u de bevestiging niet ontvangt.</span></p>
   </div>
 
 </div><!-- /form-wrapper -->
@@ -827,7 +828,7 @@ const CONFIG = {
   VALIDATE_ORDER_URL: 'https://n8n.srv897125.hstgr.cloud/webhook/validate-order',
 
   // Geheime token — moet exact overeenkomen met SECRET in beide n8n workflows
-  SECRET_TOKEN: 'lw-2024-xK9mP3qR7vN2',
+  SECRET_TOKEN: 'lw-form-token-2024-verander-dit',
 
   // Voiceflow variabelen die worden ingevuld na submit
   VF_VARIABLES: true,
@@ -1028,7 +1029,13 @@ async function validateAlt(mode, value) {
       body: JSON.stringify(body),
     });
     const data = await res.json();
-    if (data.exists) {
+    if (data.multiple) {
+      // Meerdere toestellen op dit e-mailadres — stuur door naar serienummer of SIM
+      state.serialValid = false;
+      showBadge('fail', 'Er staan meerdere toestellen op dit e-mailadres. Gebruik het toestelnummer of telefoonnummer van het toestel.');
+      // Schakel terug naar SIM-tab zodat klant makkelijk kan wisselen
+      switchAlt('sim');
+    } else if (data.exists) {
       state.serialValid = true;
       if (data.serial_number) document.getElementById('serial').value = data.serial_number;
       showBadge('ok', 'Gegevens gevonden in onze database');
