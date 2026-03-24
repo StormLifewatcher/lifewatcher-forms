@@ -804,15 +804,6 @@
 
 <script>
 // ════════════════════════════════════════════════════════
-//  TRANSCRIPT ONTVANGEN VAN VOICEFLOW EXTENSION
-// ════════════════════════════════════════════════════════
-window.addEventListener('message', function(event) {
-  if (event.data?.type === 'lw_set_transcript') {
-    state.transcript = event.data.transcript || '';
-  }
-});
-
-// ════════════════════════════════════════════════════════
 //  CONFIG – vervang deze URLs met uw eigen n8n webhooks
 // ════════════════════════════════════════════════════════
 const CONFIG = {
@@ -841,12 +832,24 @@ const CONFIG = {
 //  STATE
 // ════════════════════════════════════════════════════════
 const state = {
-  currentStep: 1,
-  serialValid: null,   // null | true | false
-  altMode: 'sim',      // 'sim' | 'email'
-  showingAlt: false,
-  category: '',
+  currentStep:  1,
+  serialValid:  null,   // null | true | false
+  orderValid:   null,   // null | true | false
+  altMode:      'sim',  // 'sim' | 'email'
+  showingAlt:   false,
+  ticketType:   null,   // 'device' | 'delivery' | 'other'
+  category:     '',
+  transcript:   '',
 };
+
+// ════════════════════════════════════════════════════════
+//  TRANSCRIPT ONTVANGEN VAN VOICEFLOW EXTENSION
+// ════════════════════════════════════════════════════════
+window.addEventListener('message', function(event) {
+  if (event.data?.type === 'lw_set_transcript') {
+    state.transcript = event.data.transcript || '';
+  }
+});
 
 // ════════════════════════════════════════════════════════
 //  STEP NAVIGATION
