@@ -57,23 +57,35 @@
   <div class="badge">🧪 Development versie</div>
 </div>
 
-<script type="module">
-  import { LifeWatcherTicketExtension }
-    from 'https://stormlifewatcher.github.io/lifewatcher-forms/lw-extension.js';
-
+<script>
+  // Stap 1: laad de Voiceflow widget
   (function(d, t) {
     var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
     v.onload = function() {
-      window.voiceflow.chat.load({
-        verify: { projectID: '69a94a1102cd5f2a8ac1d0c2' },
-        url: 'https://general-runtime.voiceflow.com',
-        versionID: 'development',
-        voice: {
-          url: "https://runtime-api.voiceflow.com"
-        },
-        extensions: [LifeWatcherTicketExtension]
-      });
-    }
+      // Stap 2: laad de extension via dynamic import, daarna pas chat.load
+      import('https://stormlifewatcher.github.io/lifewatcher-forms/lw-extension.js')
+        .then(function(module) {
+          var LifeWatcherTicketExtension = module.LifeWatcherTicketExtension;
+          window.__lwExtensionLoaded = true;
+          window.voiceflow.chat.load({
+            verify: { projectID: '69a94a1102cd5f2a8ac1d0c2' },
+            url: 'https://general-runtime.voiceflow.com',
+            versionID: 'development',
+            voice: { url: "https://runtime-api.voiceflow.com" },
+            extensions: [LifeWatcherTicketExtension]
+          });
+        })
+        .catch(function(err) {
+          console.error('Extension laden mislukt:', err);
+          // Fallback: laad zonder extension
+          window.voiceflow.chat.load({
+            verify: { projectID: '69a94a1102cd5f2a8ac1d0c2' },
+            url: 'https://general-runtime.voiceflow.com',
+            versionID: 'development',
+            voice: { url: "https://runtime-api.voiceflow.com" }
+          });
+        });
+    };
     v.src = "https://cdn.voiceflow.com/widget/bundle.mjs";
     v.type = "text/javascript";
     s.parentNode.insertBefore(v, s);
