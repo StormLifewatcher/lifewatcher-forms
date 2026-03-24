@@ -7,81 +7,92 @@
 </head>
 <body>
 
-<script>
-  (function(d, t) {
-    var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
-    v.onload = function() {
+<!--
+  VERSCHIL MET VORIGE VERSIE:
+  We importeren de bundle nu als echte ES module (type="module").
+  Dat is de enige manier waarop Voiceflow de extensions parameter
+  daadwerkelijk verwerkt in versie 2.150.2
+-->
+<script type="module">
 
-      // ── Extensie definitie ────────────────────────────────
-      var LifeWatcherTicketExtension = {
-        name: 'LifeWatcherTicket',
-        type: 'response',
+  // Stap 1: Laad de widget bundle als module
+  // Dit zet window.voiceflow klaar als side-effect
+  await import('https://cdn.voiceflow.com/widget-next/bundle.mjs');
 
-        match: function(args) {
-          var trace = args.trace;
-          return (
-            trace.type === 'lw_ticket_form' ||
-            (trace.payload && trace.payload.name === 'lw_ticket_form') ||
-            (trace.payload && trace.payload.type === 'lw_ticket_form')
-          );
-        },
+  console.log('✅ Widget bundle geladen, voiceflow beschikbaar:', !!window.voiceflow);
 
-        render: function(args) {
-          var trace   = args.trace;
-          var element = args.element;
-          var transcript = (trace.payload && trace.payload.transcript) || '';
+  // Stap 2: Definieer de extensie
+  const LifeWatcherTicketExtension = {
+    name: 'LifeWatcherTicket',
+    type: 'response',
 
-          var iframe = document.createElement('iframe');
-          iframe.src = 'https://stormlifewatcher.github.io/lifewatcher-forms/lifewatcher-ticket-form.html';
-          iframe.style.cssText = 'width:100%;height:620px;border:none;border-radius:12px;margin-top:8px;display:block';
+    match: ({ trace }) => {
+      // Log ELKE trace zodat we zien wat er binnenkomt
+      console.log('TRACE:', trace.type, JSON.stringify(trace.payload));
 
-          iframe.addEventListener('load', function() {
-            iframe.contentWindow.postMessage(
-              { type: 'lw_set_transcript', transcript: transcript },
-              '*'
-            );
-          });
+      const matched = (
+        trace.type === 'lw_ticket_form' ||
+        (trace.payload && trace.payload.name === 'lw_ticket_form') ||
+        (trace.payload && trace.payload.type === 'lw_ticket_form')
+      );
 
-          element.appendChild(iframe);
+      if (matched) console.log('✅ MATCH! Formulier wordt geladen');
+      return matched;
+    },
 
-          function onMessage(event) {
-            if (!event.data || event.data.type !== 'lw_ticket_submitted') return;
+    render: ({ trace, element }) => {
+      console.log('✅ RENDER aangeroepen');
 
-            var p = event.data.payload || {};
+      const transcript = (trace.payload && trace.payload.transcript) || '';
 
-            window.voiceflow.chat.interact({
-              type: 'complete',
-              payload: {
-                ticket_id:   p.ticket_id   || '',
-                email:       p.email       || '',
-                name:        p.name        || '',
-                serial:      p.serial      || '',
-                category:    p.category    || '',
-                description: p.description || '',
-              }
-            });
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://stormlifewatcher.github.io/lifewatcher-forms/lifewatcher-ticket-form.html';
+      iframe.style.cssText = 'width:100%;height:620px;border:none;border-radius:12px;margin-top:8px;display:block';
 
-            window.removeEventListener('message', onMessage);
-          }
-
-          window.addEventListener('message', onMessage);
-        }
-      };
-
-      // ── Voiceflow chat starten ────────────────────────────
-      window.voiceflow.chat.load({
-        verify:    { projectID: '69a94a1102cd5f2a8ac1d0c2' },
-        url:       'https://general-runtime.voiceflow.com',
-        versionID: 'development',
-        extensions: [LifeWatcherTicketExtension]
+      iframe.addEventListener('load', () => {
+        console.log('✅ Iframe geladen, transcript verstuurd');
+        iframe.contentWindow.postMessage(
+          { type: 'lw_set_transcript', transcript },
+          '*'
+        );
       });
 
-    };
+      element.appendChild(iframe);
 
-    v.src = 'https://cdn.voiceflow.com/widget-next/bundle.mjs';
-    v.type = 'text/javascript';
-    s.parentNode.insertBefore(v, s);
-  })(document, 'script');
+      function onMessage(event) {
+        if (!event.data || event.data.type !== 'lw_ticket_submitted') return;
+        console.log('✅ Formulier ingevuld:', event.data.payload);
+
+        const p = event.data.payload || {};
+        window.voiceflow.chat.interact({
+          type: 'complete',
+          payload: {
+            ticket_id:   p.ticket_id   || '',
+            email:       p.email       || '',
+            name:        p.name        || '',
+            serial:      p.serial      || '',
+            category:    p.category    || '',
+            description: p.description || '',
+          }
+        });
+
+        window.removeEventListener('message', onMessage);
+      }
+
+      window.addEventListener('message', onMessage);
+    }
+  };
+
+  // Stap 3: Start de chat met de extensie
+  window.voiceflow.chat.load({
+    verify:    { projectID: '69a94a1102cd5f2a8ac1d0c2' },
+    url:       'https://general-runtime.voiceflow.com',
+    versionID: 'development',
+    extensions: [LifeWatcherTicketExtension],
+  });
+
+  console.log('✅ chat.load() aangeroepen');
+
 </script>
 
 </body>
