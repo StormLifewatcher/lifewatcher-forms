@@ -7,69 +7,81 @@
 </head>
 <body>
 
-<script type="module">
+<script>
+  (function(d, t) {
+    var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+    v.onload = function() {
 
-  import { createChat } from 'https://cdn.voiceflow.com/widget-next/bundle.mjs';
+      // ── Extensie definitie ────────────────────────────────
+      var LifeWatcherTicketExtension = {
+        name: 'LifeWatcherTicket',
+        type: 'response',
 
-  const LifeWatcherTicketExtension = {
-    name: 'LifeWatcherTicket',
-    type: 'response',
+        match: function(args) {
+          var trace = args.trace;
+          return (
+            trace.type === 'lw_ticket_form' ||
+            (trace.payload && trace.payload.name === 'lw_ticket_form') ||
+            (trace.payload && trace.payload.type === 'lw_ticket_form')
+          );
+        },
 
-    match: ({ trace }) =>
-      trace.type === 'lw_ticket_form' ||
-      trace.payload?.name === 'lw_ticket_form' ||
-      trace.payload?.type === 'lw_ticket_form',
+        render: function(args) {
+          var trace   = args.trace;
+          var element = args.element;
+          var transcript = (trace.payload && trace.payload.transcript) || '';
 
-    render: ({ trace, element }) => {
-      const transcript = trace.payload?.transcript || '';
+          var iframe = document.createElement('iframe');
+          iframe.src = 'https://stormlifewatcher.github.io/lifewatcher-forms/lifewatcher-ticket-form.html';
+          iframe.style.cssText = 'width:100%;height:620px;border:none;border-radius:12px;margin-top:8px;display:block';
 
-      const iframe = document.createElement('iframe');
-      iframe.src = 'https://stormlifewatcher.github.io/lifewatcher-forms/lifewatcher-ticket-form.html';
-      iframe.style.cssText = 'width:100%;height:620px;border:none;border-radius:12px;margin-top:8px;display:block';
+          iframe.addEventListener('load', function() {
+            iframe.contentWindow.postMessage(
+              { type: 'lw_set_transcript', transcript: transcript },
+              '*'
+            );
+          });
 
-      iframe.addEventListener('load', () => {
-        iframe.contentWindow.postMessage(
-          { type: 'lw_set_transcript', transcript: transcript },
-          '*'
-        );
+          element.appendChild(iframe);
+
+          function onMessage(event) {
+            if (!event.data || event.data.type !== 'lw_ticket_submitted') return;
+
+            var p = event.data.payload || {};
+
+            window.voiceflow.chat.interact({
+              type: 'complete',
+              payload: {
+                ticket_id:   p.ticket_id   || '',
+                email:       p.email       || '',
+                name:        p.name        || '',
+                serial:      p.serial      || '',
+                category:    p.category    || '',
+                description: p.description || '',
+              }
+            });
+
+            window.removeEventListener('message', onMessage);
+          }
+
+          window.addEventListener('message', onMessage);
+        }
+      };
+
+      // ── Voiceflow chat starten ────────────────────────────
+      window.voiceflow.chat.load({
+        verify:    { projectID: '69a94a1102cd5f2a8ac1d0c2' },
+        url:       'https://general-runtime.voiceflow.com',
+        versionID: 'development',
+        extensions: [LifeWatcherTicketExtension]
       });
 
-      element.appendChild(iframe);
+    };
 
-      function onMessage(event) {
-        if (event.data?.type !== 'lw_ticket_submitted') return;
-
-        const p = event.data.payload || {};
-
-        window.voiceflow.chat.interact({
-          type: 'complete',
-          payload: {
-            ticket_id:   p.ticket_id   || '',
-            email:       p.email       || '',
-            name:        p.name        || '',
-            serial:      p.serial      || '',
-            category:    p.category    || '',
-            description: p.description || '',
-          },
-        });
-
-        window.removeEventListener('message', onMessage);
-      }
-
-      window.addEventListener('message', onMessage);
-    },
-  };
-
-  const chat = createChat({
-    verify:    { projectID: '69a94a1102cd5f2a8ac1d0c2' },
-    url:       'https://general-runtime.voiceflow.com',
-    versionID: 'development',
-    extensions: [LifeWatcherTicketExtension],
-  });
-
-  window.voiceflow = window.voiceflow || {};
-  window.voiceflow.chat = chat;
-
+    v.src = 'https://cdn.voiceflow.com/widget-next/bundle.mjs';
+    v.type = 'text/javascript';
+    s.parentNode.insertBefore(v, s);
+  })(document, 'script');
 </script>
 
 </body>
