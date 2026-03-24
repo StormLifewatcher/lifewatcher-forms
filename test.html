@@ -3,96 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LifeWatcher Support</title>
+  <title>LifeWatcher – Diagnose</title>
 </head>
 <body>
 
-<!--
-  VERSCHIL MET VORIGE VERSIE:
-  We importeren de bundle nu als echte ES module (type="module").
-  Dat is de enige manier waarop Voiceflow de extensions parameter
-  daadwerkelijk verwerkt in versie 2.150.2
--->
-<script type="module">
+<!-- Stap 1: laad de bundle als module via een script tag (niet inline import) -->
+<!-- Dit geeft de floating bubble ipv inline rendering -->
+<script type="module" src="https://cdn.voiceflow.com/widget-next/bundle.mjs"></script>
 
-  // Stap 1: Laad de widget bundle als module
-  // Dit zet window.voiceflow klaar als side-effect
-  await import('https://cdn.voiceflow.com/widget-next/bundle.mjs');
-
-  console.log('✅ Widget bundle geladen, voiceflow beschikbaar:', !!window.voiceflow);
-
-  // Stap 2: Definieer de extensie
-  const LifeWatcherTicketExtension = {
-    name: 'LifeWatcherTicket',
-    type: 'response',
-
-    match: ({ trace }) => {
-      // Log ELKE trace zodat we zien wat er binnenkomt
-      console.log('TRACE:', trace.type, JSON.stringify(trace.payload));
-
-      const matched = (
-        trace.type === 'lw_ticket_form' ||
-        (trace.payload && trace.payload.name === 'lw_ticket_form') ||
-        (trace.payload && trace.payload.type === 'lw_ticket_form')
-      );
-
-      if (matched) console.log('✅ MATCH! Formulier wordt geladen');
-      return matched;
-    },
-
-    render: ({ trace, element }) => {
-      console.log('✅ RENDER aangeroepen');
-
-      const transcript = (trace.payload && trace.payload.transcript) || '';
-
-      const iframe = document.createElement('iframe');
-      iframe.src = 'https://stormlifewatcher.github.io/lifewatcher-forms/lifewatcher-ticket-form.html';
-      iframe.style.cssText = 'width:100%;height:620px;border:none;border-radius:12px;margin-top:8px;display:block';
-
-      iframe.addEventListener('load', () => {
-        console.log('✅ Iframe geladen, transcript verstuurd');
-        iframe.contentWindow.postMessage(
-          { type: 'lw_set_transcript', transcript },
-          '*'
-        );
-      });
-
-      element.appendChild(iframe);
-
-      function onMessage(event) {
-        if (!event.data || event.data.type !== 'lw_ticket_submitted') return;
-        console.log('✅ Formulier ingevuld:', event.data.payload);
-
-        const p = event.data.payload || {};
-        window.voiceflow.chat.interact({
-          type: 'complete',
-          payload: {
-            ticket_id:   p.ticket_id   || '',
-            email:       p.email       || '',
-            name:        p.name        || '',
-            serial:      p.serial      || '',
-            category:    p.category    || '',
-            description: p.description || '',
-          }
-        });
-
-        window.removeEventListener('message', onMessage);
-      }
-
-      window.addEventListener('message', onMessage);
+<!-- Stap 2: wacht tot window.voiceflow klaar is, log alles -->
+<script>
+  function init() {
+    if (!window.voiceflow || !window.voiceflow.chat) {
+      setTimeout(init, 100);
+      return;
     }
-  };
 
-  // Stap 3: Start de chat met de extensie
-  window.voiceflow.chat.load({
-    verify:    { projectID: '69a94a1102cd5f2a8ac1d0c2' },
-    url:       'https://general-runtime.voiceflow.com',
-    versionID: 'development',
-    extensions: [LifeWatcherTicketExtension],
-  });
+    console.log('=== VOICEFLOW OBJECT ===');
+    console.log('window.voiceflow keys:', Object.keys(window.voiceflow));
+    console.log('window.voiceflow.chat keys:', Object.keys(window.voiceflow.chat));
+    console.log('chat.load type:', typeof window.voiceflow.chat.load);
+    console.log('chat.on type:', typeof window.voiceflow.chat.on);
+    console.log('chat.interact type:', typeof window.voiceflow.chat.interact);
 
-  console.log('✅ chat.load() aangeroepen');
+    // Probeer de extensie te registreren via chat.load()
+    var LifeWatcherTicketExtension = {
+      name: 'LifeWatcherTicket',
+      type: 'response',
+      match: function(args) {
+        var trace = args.trace || args;
+        console.log('🔍 MATCH AANGEROEPEN met trace.type:', trace.type, 'payload:', JSON.stringify(trace.payload));
+        return (
+          trace.type === 'lw_ticket_form' ||
+          (trace.payload && trace.payload.name === 'lw_ticket_form') ||
+          (trace.payload && trace.payload.type === 'lw_ticket_form')
+        );
+      },
+      render: function(args) {
+        var element = args.element || args;
+        console.log('✅ RENDER AANGEROEPEN');
+        var div = document.createElement('div');
+        div.style.cssText = 'padding:16px;background:#e8f4fd;border-radius:8px;font-family:sans-serif';
+        div.textContent = '✅ Extensie werkt! Formulier wordt geladen...';
+        element.appendChild(div);
+      }
+    };
 
+    // Probeer BEIDE manieren van extensions doorgeven
+    window.voiceflow.chat.load({
+      verify:    { projectID: '69a94a1102cd5f2a8ac1d0c2' },
+      url:       'https://general-runtime.voiceflow.com',
+      versionID: 'development',
+      // Manier 1: top-level
+      extensions: [LifeWatcherTicketExtension],
+      // Manier 2: onder assistant (tegelijk proberen)
+      assistant: {
+        extensions: [LifeWatcherTicketExtension]
+      }
+    });
+
+    console.log('✅ chat.load() aangeroepen');
+
+    // Probeer ook event listener na load
+    setTimeout(function() {
+      if (typeof window.voiceflow.chat.on === 'function') {
+        window.voiceflow.chat.on('trace', function(trace) {
+          console.log('📡 EVENT trace:', trace.type, JSON.stringify(trace.payload));
+        });
+        console.log('✅ trace event listener geregistreerd');
+      } else {
+        console.log('❌ chat.on bestaat niet in deze versie');
+      }
+    }, 1000);
+  }
+
+  init();
 </script>
 
 </body>
