@@ -81,7 +81,9 @@
         url: 'https://general-runtime.voiceflow.com',
         versionID: 'development',
         voice: { url: 'https://runtime-api.voiceflow.com' },
-        extensions: [LifeWatcherTicketExtension]
+        assistant: {
+          extensions: [LifeWatcherTicketExtension]
+        }
       });
     };
     v.src = 'https://cdn.voiceflow.com/widget-next/bundle.mjs';
