@@ -5,89 +5,87 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LifeWatcher – Chatbot Test</title>
 <style>
-  body {
-    font-family: system-ui, sans-serif;
-    background: #f0f4f8;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    margin: 0;
-  }
-  .card {
-    background: white;
-    border-radius: 16px;
-    padding: 40px;
-    max-width: 480px;
-    text-align: center;
-    box-shadow: 0 4px 24px rgba(0,0,0,.08);
-  }
-  .logo {
-    width: 48px; height: 48px;
-    background: #1E6FD9;
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 20px;
-  }
+  body { font-family: system-ui, sans-serif; background: #f0f4f8; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+  .card { background: white; border-radius: 16px; padding: 40px; max-width: 480px; text-align: center; box-shadow: 0 4px 24px rgba(0,0,0,.08); }
+  .logo { width: 48px; height: 48px; background: #1E6FD9; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
   h1 { font-size: 20px; color: #1A2B45; margin-bottom: 8px; }
   p  { font-size: 14px; color: #6B7B90; line-height: 1.6; }
-  .badge {
-    display: inline-block;
-    background: #EBF3FD;
-    color: #154FA6;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 4px 12px;
-    border-radius: 20px;
-    margin-top: 16px;
-  }
+  .badge { display: inline-block; background: #EBF3FD; color: #154FA6; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; margin-top: 16px; }
 </style>
 </head>
 <body>
 <div class="card">
   <div class="logo">
     <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round"
-        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
     </svg>
   </div>
   <h1>LifeWatcher Chatbot Test</h1>
-  <p>Dit is een testpagina voor de chatbot integratie.<br>
-     Klik op het chatpictogram rechtsonder om te beginnen.</p>
+  <p>Klik op het chatpictogram rechtsonder om te beginnen.</p>
   <div class="badge">🧪 Development versie</div>
 </div>
 
 <script>
-  // Stap 1: laad de Voiceflow widget
+  // Extension inline gedefinieerd — geen import nodig
+  const LifeWatcherTicketExtension = {
+    name: 'LifeWatcherTicket',
+    type: 'response',
+
+    match: ({ trace }) =>
+      trace.type === 'lw_ticket_form' ||
+      trace.payload?.name === 'lw_ticket_form',
+
+    render: ({ trace, element }) => {
+      const transcript = trace.payload?.transcript || '';
+
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://stormlifewatcher.github.io/lifewatcher-forms/lifewatcher-ticket-form.html';
+      iframe.style.cssText = 'width:100%;height:620px;border:none;border-radius:12px;margin-top:8px;display:block';
+
+      iframe.addEventListener('load', function() {
+        iframe.contentWindow.postMessage({
+          type: 'lw_set_transcript',
+          transcript: transcript
+        }, '*');
+      });
+
+      element.appendChild(iframe);
+
+      function onMessage(event) {
+        if (event.data && event.data.type === 'lw_ticket_submitted') {
+          var payload = event.data.payload;
+          window.voiceflow.chat.interact({
+            type: 'complete',
+            payload: {
+              ticket_id:   payload.ticket_id   || '',
+              email:       payload.email        || '',
+              name:        payload.name         || '',
+              serial:      payload.serial       || '',
+              category:    payload.category     || '',
+              description: payload.description  || ''
+            }
+          });
+          window.removeEventListener('message', onMessage);
+        }
+      }
+      window.addEventListener('message', onMessage);
+    }
+  };
+
+  // Voiceflow laden met extension
   (function(d, t) {
     var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
     v.onload = function() {
-      // Stap 2: laad de extension via dynamic import, daarna pas chat.load
-      import('https://stormlifewatcher.github.io/lifewatcher-forms/lw-extension.js')
-        .then(function(module) {
-          var LifeWatcherTicketExtension = module.LifeWatcherTicketExtension;
-          window.__lwExtensionLoaded = true;
-          window.voiceflow.chat.load({
-            verify: { projectID: '69a94a1102cd5f2a8ac1d0c2' },
-            url: 'https://general-runtime.voiceflow.com',
-            versionID: 'development',
-            voice: { url: "https://runtime-api.voiceflow.com" },
-            extensions: [LifeWatcherTicketExtension]
-          });
-        })
-        .catch(function(err) {
-          console.error('Extension laden mislukt:', err);
-          // Fallback: laad zonder extension
-          window.voiceflow.chat.load({
-            verify: { projectID: '69a94a1102cd5f2a8ac1d0c2' },
-            url: 'https://general-runtime.voiceflow.com',
-            versionID: 'development',
-            voice: { url: "https://runtime-api.voiceflow.com" }
-          });
-        });
+      window.voiceflow.chat.load({
+        verify: { projectID: '69a94a1102cd5f2a8ac1d0c2' },
+        url: 'https://general-runtime.voiceflow.com',
+        versionID: 'development',
+        voice: { url: 'https://runtime-api.voiceflow.com' },
+        extensions: [LifeWatcherTicketExtension]
+      });
     };
-    v.src = "https://cdn.voiceflow.com/widget/bundle.mjs";
-    v.type = "text/javascript";
+    v.src = 'https://cdn.voiceflow.com/widget-next/bundle.mjs';
+    v.type = 'text/javascript';
     s.parentNode.insertBefore(v, s);
   })(document, 'script');
 </script>
