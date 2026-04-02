@@ -7,10 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* ─────────────────────────────────────────
-     CONFIG: pas hier de kleuren aan op jouw
-     LifeWatcher brand-kleuren
-  ───────────────────────────────────────── */
   :root {
     --brand:        #1E6FD9;
     --brand-light:  #EBF3FD;
@@ -33,10 +29,6 @@
     --shadow:       0 2px 12px rgba(30,111,217,.10);
     --shadow-lg:    0 8px 32px rgba(30,111,217,.14);
     --font:         'Plus Jakarta Sans', system-ui, sans-serif;
-
-    /* ─── API ENDPOINTS – vervang deze URLs ─── */
-    --api-validate: https://jouw-n8n.nl/webhook/validate-device;
-    --api-submit:   https://jouw-n8n.nl/webhook/create-ticket;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -50,14 +42,12 @@
     min-height: 100vh;
   }
 
-  /* ── WRAPPER ── */
   .form-wrapper {
     max-width: 480px;
     margin: 0 auto;
     padding: 20px 16px 40px;
   }
 
-  /* ── HEADER ── */
   .form-header {
     display: flex;
     align-items: center;
@@ -72,460 +62,148 @@
     flex-shrink: 0;
   }
   .form-header-icon svg { color: #fff; }
-  .form-header h1 {
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1.3;
-  }
-  .form-header p {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 1px;
-  }
+  .form-header h1 { font-size: 17px; font-weight: 700; color: var(--text); line-height: 1.3; }
+  .form-header p  { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
 
-  /* ── PROGRESS ── */
-  .progress-bar {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    margin-bottom: 28px;
-  }
+  .progress-bar { display: flex; align-items: center; margin-bottom: 28px; }
   .step-indicator {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1;
-    position: relative;
+    display: flex; flex-direction: column; align-items: center;
+    flex: 1; position: relative;
   }
   .step-indicator:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    top: 14px;
-    left: 50%;
-    width: 100%;
-    height: 2px;
-    background: var(--border);
-    z-index: 0;
-    transition: background .3s;
+    content: ''; position: absolute; top: 14px; left: 50%;
+    width: 100%; height: 2px; background: var(--border); z-index: 0; transition: background .3s;
   }
-  .step-indicator.done:not(:last-child)::after  { background: var(--brand); }
+  .step-indicator.done:not(:last-child)::after { background: var(--brand); }
   .step-dot {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    border: 2px solid var(--border);
-    background: var(--white);
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 2px solid var(--border); background: var(--white);
     display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700;
-    color: var(--text-muted);
-    position: relative; z-index: 1;
-    transition: all .3s;
+    font-size: 12px; font-weight: 700; color: var(--text-muted);
+    position: relative; z-index: 1; transition: all .3s;
   }
   .step-indicator.active .step-dot {
-    border-color: var(--brand);
-    background: var(--brand);
-    color: #fff;
+    border-color: var(--brand); background: var(--brand); color: #fff;
     box-shadow: 0 0 0 4px var(--brand-light);
   }
-  .step-indicator.done .step-dot {
-    border-color: var(--brand);
-    background: var(--brand);
-    color: #fff;
-  }
-  .step-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-muted);
-    margin-top: 6px;
-    text-align: center;
-    transition: color .3s;
-  }
+  .step-indicator.done .step-dot { border-color: var(--brand); background: var(--brand); color: #fff; }
+  .step-label { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-top: 6px; text-align: center; transition: color .3s; }
   .step-indicator.active .step-label { color: var(--brand); }
   .step-indicator.done  .step-label  { color: var(--brand); }
 
-  /* ── CARD ── */
-  .card {
-    background: var(--white);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: 24px 20px;
-    margin-bottom: 12px;
-  }
-  .card-title {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-  .card-subtitle {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-bottom: 20px;
-    line-height: 1.5;
-  }
+  .card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px 20px; margin-bottom: 12px; }
+  .card-title    { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .card-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
 
-  /* ── FIELDS ── */
   .field { margin-bottom: 16px; }
   .field:last-child { margin-bottom: 0; }
 
-  label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
-  label .optional {
-    font-weight: 400;
-    color: var(--text-muted);
-    margin-left: 4px;
-  }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  label .optional { font-weight: 400; color: var(--text-muted); margin-left: 4px; }
 
-  input[type="text"],
-  input[type="email"],
-  input[type="tel"],
-  textarea,
-  select {
-    width: 100%;
-    padding: 11px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-family: var(--font);
-    font-size: 14px;
-    color: var(--text);
-    background: var(--white);
-    transition: border-color .2s, box-shadow .2s;
-    outline: none;
-    appearance: none;
+  input[type="text"], input[type="email"], input[type="tel"], textarea, select {
+    width: 100%; padding: 11px 14px;
+    border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    font-family: var(--font); font-size: 14px; color: var(--text);
+    background: var(--white); transition: border-color .2s, box-shadow .2s;
+    outline: none; appearance: none;
   }
-  input:focus, textarea:focus, select:focus {
-    border-color: var(--brand);
-    box-shadow: 0 0 0 3px var(--brand-light);
-  }
+  input:focus, textarea:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-light); }
   input.valid   { border-color: var(--success); }
   input.invalid { border-color: var(--error); }
   textarea { resize: vertical; min-height: 90px; }
 
-  .field-hint {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 5px;
-    display: flex; align-items: flex-start; gap: 5px;
-  }
-  .field-error {
-    font-size: 12px;
-    color: var(--error);
-    margin-top: 5px;
-    display: none;
-  }
+  .field-hint { font-size: 12px; color: var(--text-muted); margin-top: 5px; display: flex; align-items: flex-start; gap: 5px; }
+  .field-error { font-size: 12px; color: var(--error); margin-top: 5px; display: none; }
   .field-error.show { display: block; }
 
-  /* ── INPUT WITH ICON ── */
   .input-with-icon { position: relative; }
   .input-with-icon input { padding-right: 40px; }
-  .input-icon {
-    position: absolute;
-    right: 12px; top: 50%; transform: translateY(-50%);
-    color: var(--text-muted);
-    pointer-events: none;
-    transition: color .2s;
-  }
+  .input-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; transition: color .2s; }
   .input-icon.success { color: var(--success); }
   .input-icon.error   { color: var(--error); }
   .input-icon.loading { animation: spin .8s linear infinite; }
 
-  /* ── VALIDATION BADGE ── */
-  .validate-badge {
-    display: none;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    font-weight: 500;
-    margin-top: 8px;
-  }
-  .validate-badge.show  { display: flex; }
-  .validate-badge.ok    { background: var(--success-bg); color: var(--success); }
-  .validate-badge.fail  { background: var(--error-bg);   color: var(--error); }
-  .validate-badge.warn  { background: var(--warn-bg);    color: var(--warn); }
+  .validate-badge { display: none; align-items: center; gap: 8px; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; margin-top: 8px; }
+  .validate-badge.show { display: flex; }
+  .validate-badge.ok   { background: var(--success-bg); color: var(--success); }
+  .validate-badge.fail { background: var(--error-bg);   color: var(--error); }
+  .validate-badge.warn { background: var(--warn-bg);    color: var(--warn); }
 
-  /* ── HELP ACCORDION ── */
   .help-toggle {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--brand);
-    font-family: var(--font);
-    font-size: 13px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 0 0;
-    transition: opacity .2s;
-    text-decoration: underline;
-    text-underline-offset: 3px;
+    background: none; border: none; cursor: pointer; color: var(--brand);
+    font-family: var(--font); font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; gap: 6px; padding: 8px 0 0;
+    transition: opacity .2s; text-decoration: underline; text-underline-offset: 3px;
   }
   .help-toggle:hover { opacity: .75; }
   .help-toggle svg { transition: transform .25s; flex-shrink: 0; }
   .help-toggle.open svg { transform: rotate(180deg); }
-
-  .help-panel {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height .35s cubic-bezier(.4,0,.2,1);
-  }
+  .help-panel { max-height: 0; overflow: hidden; transition: max-height .35s cubic-bezier(.4,0,.2,1); }
   .help-panel.open { max-height: 600px; }
-
-  .help-content {
-    margin-top: 12px;
-    background: var(--brand-light);
-    border-radius: var(--radius-sm);
-    padding: 14px 16px;
-    border-left: 3px solid var(--brand);
-  }
-  .help-content p {
-    font-size: 13px;
-    color: var(--text);
-    line-height: 1.6;
-    margin-bottom: 10px;
-  }
+  .help-content { margin-top: 12px; background: var(--brand-light); border-radius: var(--radius-sm); padding: 14px 16px; border-left: 3px solid var(--brand); }
+  .help-content p { font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 10px; }
   .help-content strong { color: var(--brand-dark); }
-  .help-steps {
-    list-style: none;
-    counter-reset: step;
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .help-steps li {
-    counter-increment: step;
-    font-size: 13px;
-    display: flex; align-items: flex-start; gap: 10px;
-    color: var(--text);
-  }
+  .help-steps { list-style: none; counter-reset: step; display: flex; flex-direction: column; gap: 8px; }
+  .help-steps li { counter-increment: step; font-size: 13px; display: flex; align-items: flex-start; gap: 10px; color: var(--text); }
   .help-steps li::before {
-    content: counter(step);
-    min-width: 22px; height: 22px;
-    border-radius: 50%;
-    background: var(--brand);
-    color: #fff;
-    font-size: 11px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; margin-top: 1px;
+    content: counter(step); min-width: 22px; height: 22px; border-radius: 50%;
+    background: var(--brand); color: #fff; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
   }
-  .help-link {
-    display: inline-flex; align-items: center; gap: 5px;
-    color: var(--brand); font-size: 13px; font-weight: 600;
-    text-decoration: none;
-    margin-top: 4px;
-  }
+  .help-link { display: inline-flex; align-items: center; gap: 5px; color: var(--brand); font-size: 13px; font-weight: 600; text-decoration: none; margin-top: 4px; }
   .help-link:hover { text-decoration: underline; }
 
-  /* ── STICKER ILLUSTRATION ── */
-  .sticker-preview {
-    background: #fff;
-    border: 1.5px dashed var(--border);
-    border-radius: var(--radius-sm);
-    padding: 14px;
-    margin: 12px 0;
-    text-align: center;
-  }
-  .sticker-preview .sticker-box {
-    display: inline-block;
-    background: #f0f4f8;
-    border: 2px solid #c8d8ec;
-    border-radius: 6px;
-    padding: 10px 18px;
-    font-size: 12px;
-    color: var(--text-muted);
-    position: relative;
-  }
-  .sticker-box .sn-label {
-    font-size: 9px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .5px; color: var(--text-muted); display: block; margin-bottom: 2px;
-  }
-  .sticker-box .sn-value {
-    font-size: 15px; font-weight: 700; color: var(--brand-dark);
-    letter-spacing: 1px; font-variant-numeric: tabular-nums;
-  }
-  .sticker-box .highlight-ring {
-    position: absolute;
-    top: -4px; left: -4px; right: -4px; bottom: -4px;
-    border-radius: 9px;
-    border: 2px solid var(--accent);
-    animation: pulse-ring 1.5s ease-in-out infinite;
-    pointer-events: none;
-  }
-  @keyframes pulse-ring {
-    0%, 100% { opacity: .6; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.03); }
-  }
-  .sticker-caption {
-    font-size: 12px; color: var(--text-muted); margin-top: 8px;
-  }
+  .sticker-preview { background: #fff; border: 1.5px dashed var(--border); border-radius: var(--radius-sm); padding: 14px; margin: 12px 0; text-align: center; }
+  .sticker-preview .sticker-box { display: inline-block; background: #f0f4f8; border: 2px solid #c8d8ec; border-radius: 6px; padding: 10px 18px; font-size: 12px; color: var(--text-muted); position: relative; }
+  .sticker-box .sn-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); display: block; margin-bottom: 2px; }
+  .sticker-box .sn-value { font-size: 15px; font-weight: 700; color: var(--brand-dark); letter-spacing: 1px; font-variant-numeric: tabular-nums; }
+  .sticker-box .highlight-ring { position: absolute; top: -4px; left: -4px; right: -4px; bottom: -4px; border-radius: 9px; border: 2px solid var(--accent); animation: pulse-ring 1.5s ease-in-out infinite; pointer-events: none; }
+  @keyframes pulse-ring { 0%, 100% { opacity: .6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.03); } }
+  .sticker-caption { font-size: 12px; color: var(--text-muted); margin-top: 8px; }
 
-  /* ── NO-DEVICE FALLBACK ── */
   .no-device-btn {
-    background: none;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 10px 14px;
-    width: 100%;
-    font-family: var(--font);
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-muted);
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    margin-top: 12px;
-    transition: all .2s;
+    background: none; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    padding: 10px 14px; width: 100%; font-family: var(--font); font-size: 13px; font-weight: 600;
+    color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center;
+    gap: 8px; margin-top: 12px; transition: all .2s;
   }
-  .no-device-btn:hover {
-    border-color: var(--brand);
-    color: var(--brand);
-    background: var(--brand-light);
-  }
+  .no-device-btn:hover { border-color: var(--brand); color: var(--brand); background: var(--brand-light); }
 
-  .alt-panel {
-    display: none;
-    margin-top: 16px;
-  }
+  .alt-panel { display: none; margin-top: 16px; }
   .alt-panel.show { display: block; }
-
-  .alt-choice {
-    display: flex; gap: 8px; margin-bottom: 14px;
-  }
-  .alt-tab {
-    flex: 1;
-    padding: 10px 8px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--white);
-    font-family: var(--font);
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-muted);
-    cursor: pointer;
-    text-align: center;
-    transition: all .2s;
-  }
+  .alt-choice { display: flex; gap: 8px; margin-bottom: 14px; }
+  .alt-tab { flex: 1; padding: 10px 8px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--white); font-family: var(--font); font-size: 12px; font-weight: 600; color: var(--text-muted); cursor: pointer; text-align: center; transition: all .2s; }
   .alt-tab:hover { border-color: var(--brand); color: var(--brand); }
-  .alt-tab.active {
-    border-color: var(--brand);
-    background: var(--brand-light);
-    color: var(--brand-dark);
-  }
-
+  .alt-tab.active { border-color: var(--brand); background: var(--brand-light); color: var(--brand-dark); }
   .alt-field { display: none; }
   .alt-field.show { display: block; }
 
-  /* ── CATEGORY PILLS ── */
-  .pill-group {
-    display: flex; flex-wrap: wrap; gap: 8px;
-    margin-top: 4px;
-  }
-  .pill {
-    padding: 7px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: 24px;
-    font-size: 12px; font-weight: 600;
-    color: var(--text-muted);
-    cursor: pointer;
-    background: var(--white);
-    transition: all .15s;
-    user-select: none;
-  }
+  .pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .pill { padding: 7px 14px; border: 1.5px solid var(--border); border-radius: 24px; font-size: 12px; font-weight: 600; color: var(--text-muted); cursor: pointer; background: var(--white); transition: all .15s; user-select: none; }
   .pill:hover { border-color: var(--brand); color: var(--brand); }
-  .pill.selected {
-    border-color: var(--brand);
-    background: var(--brand);
-    color: #fff;
-  }
+  .pill.selected { border-color: var(--brand); background: var(--brand); color: #fff; }
 
-  /* ── BUTTONS ── */
-  .btn-row {
-    display: flex; gap: 10px; margin-top: 8px;
-  }
-  .btn {
-    flex: 1;
-    padding: 13px 20px;
-    border-radius: var(--radius-sm);
-    font-family: var(--font);
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    border: none;
-    transition: all .2s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
-  .btn-primary {
-    background: var(--brand);
-    color: #fff;
-    box-shadow: 0 3px 10px rgba(30,111,217,.30);
-  }
-  .btn-primary:hover:not(:disabled) {
-    background: var(--brand-dark);
-    box-shadow: 0 5px 16px rgba(30,111,217,.40);
-    transform: translateY(-1px);
-  }
+  .btn-row { display: flex; gap: 10px; margin-top: 8px; }
+  .btn { flex: 1; padding: 13px 20px; border-radius: var(--radius-sm); font-family: var(--font); font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-primary { background: var(--brand); color: #fff; box-shadow: 0 3px 10px rgba(30,111,217,.30); }
+  .btn-primary:hover:not(:disabled) { background: var(--brand-dark); box-shadow: 0 5px 16px rgba(30,111,217,.40); transform: translateY(-1px); }
   .btn-primary:active { transform: translateY(0); }
-  .btn-primary:disabled {
-    opacity: .5; cursor: not-allowed; transform: none;
-    box-shadow: none;
-  }
-  .btn-secondary {
-    background: var(--white);
-    color: var(--text-muted);
-    border: 1.5px solid var(--border);
-  }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-secondary { background: var(--white); color: var(--text-muted); border: 1.5px solid var(--border); }
   .btn-secondary:hover { border-color: var(--brand); color: var(--brand); }
 
-  /* ── SUCCESS SCREEN ── */
-  .success-screen {
-    display: none;
-    text-align: center;
-    padding: 32px 20px;
-    background: var(--white);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-  }
+  .success-screen { display: none; text-align: center; padding: 32px 20px; background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); }
   .success-screen.show { display: block; }
-
-  .success-icon {
-    width: 64px; height: 64px;
-    background: var(--success-bg);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 20px;
-  }
+  .success-icon { width: 64px; height: 64px; background: var(--success-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
   .success-icon svg { color: var(--success); }
-  .success-screen h2 {
-    font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 8px;
-  }
-  .success-screen p {
-    font-size: 14px; color: var(--text-muted); line-height: 1.6;
-  }
-  .ticket-ref {
-    display: inline-block;
-    background: var(--brand-light);
-    color: var(--brand-dark);
-    font-weight: 700; font-size: 14px;
-    padding: 8px 16px; border-radius: 20px;
-    margin: 16px 0;
-    letter-spacing: .5px;
-  }
+  .success-screen h2 { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .success-screen p  { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
 
-  /* ── DIVIDER ── */
-  .divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 16px 0;
-  }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 
-  /* ── SPINNER ── */
   @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
 
-  /* ── RESPONSIVE ── */
   @media (max-width: 380px) {
     .form-wrapper { padding: 14px 12px 32px; }
     .card { padding: 18px 14px; }
@@ -538,12 +216,10 @@
 
 <div class="form-wrapper">
 
-  <!-- HEADER -->
   <div class="form-header">
     <div class="form-header-icon">
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round"
-          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
       </svg>
     </div>
     <div>
@@ -552,84 +228,61 @@
     </div>
   </div>
 
-  <!-- PROGRESS BAR -->
   <div class="progress-bar" id="progressBar">
-    <div class="step-indicator active" id="si-1">
-      <div class="step-dot">1</div>
-      <div class="step-label">Gegevens</div>
-    </div>
-    <div class="step-indicator" id="si-2">
-      <div class="step-dot">2</div>
-      <div class="step-label">Toestel</div>
-    </div>
-    <div class="step-indicator" id="si-3">
-      <div class="step-dot">3</div>
-      <div class="step-label">Probleem</div>
-    </div>
+    <div class="step-indicator active" id="si-1"><div class="step-dot">1</div><div class="step-label">Gegevens</div></div>
+    <div class="step-indicator" id="si-2"><div class="step-dot">2</div><div class="step-label">Toestel</div></div>
+    <div class="step-indicator" id="si-3"><div class="step-dot">3</div><div class="step-label">Probleem</div></div>
   </div>
 
-  <!-- ─────────── STEP 1: PERSOONSGEGEVENS ─────────── -->
+  <!-- STEP 1 -->
   <div class="card" id="step-1">
     <div class="card-title">Uw contactgegevens</div>
     <div class="card-subtitle">Zodat onze medewerker u kan bereiken.</div>
-
     <div class="field">
       <label for="name">Naam</label>
       <input type="text" id="name" placeholder="Voor- en achternaam" autocomplete="name">
       <div class="field-error" id="err-name">Vul uw naam in.</div>
     </div>
-
     <div class="field">
       <label for="email">E-mailadres</label>
       <input type="email" id="email" placeholder="uwadres@voorbeeld.nl" autocomplete="email">
       <div class="field-error" id="err-email">Vul een geldig e-mailadres in.</div>
     </div>
-
     <div class="field">
       <label for="phone">Telefoonnummer <span class="optional">(optioneel)</span></label>
       <input type="tel" id="phone" placeholder="06 – 12 34 56 78" autocomplete="tel">
       <div class="field-hint">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-top:2px;flex-shrink:0">
-          <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
-        </svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-top:2px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
         Wij bellen alleen als dat nodig is voor uw melding.
       </div>
     </div>
-
     <div class="btn-row" style="margin-top:20px">
       <button class="btn btn-primary" onclick="goStep2()">
         Volgende
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-        </svg>
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
       </button>
     </div>
   </div>
 
-  <!-- ─────────── STEP 2: TOESTELNUMMER ─────────── -->
+  <!-- STEP 2 -->
   <div class="card" id="step-2" style="display:none">
     <div class="card-title">Waar gaat uw melding over?</div>
     <div class="card-subtitle">Zo kunnen we uw melding sneller verwerken.</div>
 
-    <!-- TYPE KEUZE -->
     <div class="pill-group" id="ticketTypeGroup" style="margin-bottom:20px">
-      <div class="pill" id="pill-device"  onclick="selectTicketType('device')">📟 Bestaand toestel</div>
+      <div class="pill" id="pill-device"   onclick="selectTicketType('device')">📟 Bestaand toestel</div>
       <div class="pill" id="pill-delivery" onclick="selectTicketType('delivery')">📦 Levering / bestelling</div>
-      <div class="pill" id="pill-other"   onclick="selectTicketType('other')">💬 Overig</div>
+      <div class="pill" id="pill-other"    onclick="selectTicketType('other')">💬 Overig</div>
     </div>
-    <div class="field-error show" id="err-ticket-type" style="display:none">Kies één van de opties hierboven.</div>
+    <div class="field-error" id="err-ticket-type" style="display:none">Kies één van de opties hierboven.</div>
 
-    <!-- TOESTEL SECTIE -->
     <div id="section-device" style="display:none">
       <div class="field">
         <label for="serial">Toestelnummer</label>
         <div class="input-with-icon">
-          <input type="text" id="serial" placeholder="bijv. 1703854175"
-                 autocomplete="off" oninput="onSerialInput()" onblur="validateSerial()">
+          <input type="text" id="serial" placeholder="bijv. 1703854175" autocomplete="off" oninput="onSerialInput()" onblur="validateSerial()">
           <span class="input-icon" id="serialIcon">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2m-2 5h8"/>
-            </svg>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2m-2 5h8"/></svg>
           </span>
         </div>
         <div class="validate-badge" id="serialBadge"></div>
@@ -637,13 +290,9 @@
       </div>
 
       <button class="help-toggle" id="helpToggle" onclick="toggleHelp()">
-        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-          <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
-        </svg>
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
         Weet u niet hoe u het toestelnummer vindt?
-        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="margin-left:auto">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-        </svg>
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="margin-left:auto"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
       </button>
 
       <div class="help-panel" id="helpPanel">
@@ -663,26 +312,20 @@
             <li>Voer het 10-cijferige nummer in het veld hierboven in</li>
           </ol>
           <a class="help-link" href="https://lifewatcher.nl/toestelnummer" target="_blank" rel="noopener">
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-            </svg>
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
             Meer hulp: hoe vind ik mijn toestelnummer?
           </a>
         </div>
       </div>
 
       <button class="no-device-btn" id="noDeviceBtn" onclick="showAltPanel()">
-        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         Ik heb het toestelnummer niet
       </button>
 
       <div class="alt-panel" id="altPanel">
         <hr class="divider">
-        <div style="font-size:13px; color:var(--text-muted); margin-bottom:12px; line-height:1.5">
-          Geen probleem. Geef één van de onderstaande gegevens — wij zoeken uw toestel via onze database.
-        </div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;line-height:1.5">Geen probleem. Geef één van de onderstaande gegevens — wij zoeken uw toestel via onze database.</div>
         <div class="alt-choice">
           <button class="alt-tab active" id="tab-sim" onclick="switchAlt('sim')">📱 Telefoonnummer toestel</button>
           <button class="alt-tab" id="tab-email-alt" onclick="switchAlt('email')">✉️ E-mailadres abonnement</button>
@@ -706,17 +349,13 @@
       </div>
     </div>
 
-    <!-- LEVERING SECTIE -->
     <div id="section-delivery" style="display:none">
       <div class="field">
         <label for="order_number">Ordernummer</label>
         <div class="input-with-icon">
-          <input type="text" id="order_number" placeholder="bijv. CGNZ018800"
-                 autocomplete="off" oninput="onOrderInput()" onblur="validateOrder()">
+          <input type="text" id="order_number" placeholder="bijv. CGNZ018800" autocomplete="off" oninput="onOrderInput()" onblur="validateOrder()">
           <span class="input-icon" id="orderIcon">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-            </svg>
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
           </span>
         </div>
         <div class="validate-badge" id="orderBadge"></div>
@@ -728,9 +367,8 @@
       </div>
     </div>
 
-    <!-- OVERIG: geen extra veld nodig -->
     <div id="section-other" style="display:none">
-      <div style="background:var(--brand-light); border-radius:var(--radius-sm); padding:14px 16px; border-left:3px solid var(--brand); font-size:13px; color:var(--text); line-height:1.6">
+      <div style="background:var(--brand-light);border-radius:var(--radius-sm);padding:14px 16px;border-left:3px solid var(--brand);font-size:13px;color:var(--text);line-height:1.6">
         U kunt uw melding in de volgende stap omschrijven. We nemen zo snel mogelijk contact met u op.
       </div>
     </div>
@@ -739,14 +377,13 @@
       <button class="btn btn-secondary" onclick="goStep(1)">Terug</button>
       <button class="btn btn-primary" id="btnStep2Next" onclick="goStep3()">
         Volgende
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-        </svg>
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
       </button>
     </div>
   </div>
 
-<div class="card" id="step-3" style="display:none">
+  <!-- STEP 3 -->
+  <div class="card" id="step-3" style="display:none">
     <div class="card-title">Omschrijf uw melding</div>
     <div class="card-subtitle">Hoe meer detail, hoe sneller wij u kunnen helpen.</div>
 
@@ -769,29 +406,24 @@
       <div class="field-error" id="err-desc">Vul een beschrijving in.</div>
     </div>
 
-    <!-- SAMENVATTING -->
-    <div style="background:var(--bg); border-radius:var(--radius-sm); padding:14px 16px; margin-top:8px; border:1px solid var(--border)">
-      <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--text-muted); margin-bottom:10px">Overzicht melding</div>
-      <div id="summaryContent" style="font-size:13px; color:var(--text); line-height:1.7"></div>
+    <div style="background:var(--bg);border-radius:var(--radius-sm);padding:14px 16px;margin-top:8px;border:1px solid var(--border)">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:10px">Overzicht melding</div>
+      <div id="summaryContent" style="font-size:13px;color:var(--text);line-height:1.7"></div>
     </div>
 
     <div class="btn-row" style="margin-top:20px">
       <button class="btn btn-secondary" onclick="goStep(2)">Terug</button>
       <button class="btn btn-primary" id="btnSubmit" onclick="submitForm()">
         Melding verzenden
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-        </svg>
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
       </button>
     </div>
   </div>
 
-  <!-- ─────────── SUCCESS ─────────── -->
+  <!-- SUCCESS -->
   <div class="success-screen" id="successScreen">
     <div class="success-icon">
-      <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-      </svg>
+      <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
     </div>
     <h2>Melding ontvangen!</h2>
     <p>Uw melding is doorgegeven aan ons team.<br>
@@ -800,70 +432,43 @@
        <span style="font-size:12px;color:var(--text-muted)">Controleer ook uw spambox als u de bevestiging niet ontvangt.</span></p>
   </div>
 
-</div><!-- /form-wrapper -->
+</div>
 
 <script>
-// ════════════════════════════════════════════════════════
-//  CONFIG – vervang deze URLs met uw eigen n8n webhooks
-// ════════════════════════════════════════════════════════
 const CONFIG = {
-  // Webhook om toestelnummer te valideren in uw database
-  // Verwacht: POST { serial_number: "1703854175" }
-  // Geeft terug: { exists: true/false, device_name?: "Senior 4G" }
-  VALIDATE_URL: 'https://n8n.srv897125.hstgr.cloud/webhook/validate-device-form',
-
-  // Webhook om ticket aan te maken (naar Zendesk via n8n)
-  // Verwacht: POST { name, email, phone, serial, alt_sim, alt_email, category, description, ... }
-  // Geeft terug: { success: true, ticket_id: "12345" }
-  SUBMIT_URL:        'https://n8n.srv897125.hstgr.cloud/webhook/create-ticket',
+  VALIDATE_URL:       'https://n8n.srv897125.hstgr.cloud/webhook/validate-device-form',
+  SUBMIT_URL:         'https://n8n.srv897125.hstgr.cloud/webhook/create-ticket',
   VALIDATE_ORDER_URL: 'https://n8n.srv897125.hstgr.cloud/webhook/validate-order',
-
-  // Geheime token — moet exact overeenkomen met SECRET in beide n8n workflows
-  SECRET_TOKEN: 'lw-2024-xK9mP3qR7vN2',
-
-  // Voiceflow variabelen die worden ingevuld na submit
-  VF_VARIABLES: true,
-
-  // Demo-modus
-  DEMO_MODE: false,
+  SECRET_TOKEN:       'lw-2024-xK9mP3qR7vN2',
+  VF_VARIABLES:       true,
+  DEMO_MODE:          false,
 };
 
-// ════════════════════════════════════════════════════════
-//  STATE
-// ════════════════════════════════════════════════════════
 const state = {
-  currentStep:  1,
-  serialValid:  null,   // null | true | false
-  orderValid:   null,   // null | true | false
-  altMode:      'sim',  // 'sim' | 'email'
-  showingAlt:   false,
-  ticketType:   null,   // 'device' | 'delivery' | 'other'
-  category:     '',
-  transcript:   '',
+  currentStep: 1,
+  serialValid: null,
+  orderValid:  null,
+  altMode:     'sim',
+  showingAlt:  false,
+  ticketType:  null,
+  category:    '',
+  transcript:  '',
 };
 
-// ════════════════════════════════════════════════════════
-//  TRANSCRIPT ONTVANGEN VAN VOICEFLOW EXTENSION
-// ════════════════════════════════════════════════════════
 window.addEventListener('message', function(event) {
   if (event.data?.type === 'lw_set_transcript') {
     state.transcript = event.data.transcript || '';
   }
 });
 
-// ════════════════════════════════════════════════════════
-//  STEP NAVIGATION
-// ════════════════════════════════════════════════════════
 function goStep(n) {
   ['step-1','step-2','step-3'].forEach((id, i) => {
     document.getElementById(id).style.display = (i+1 === n) ? 'block' : 'none';
   });
   ['si-1','si-2','si-3'].forEach((id, i) => {
     const el = document.getElementById(id);
-    el.className = 'step-indicator' +
-      (i+1 < n ? ' done' : i+1 === n ? ' active' : '');
-    el.querySelector('.step-dot').textContent =
-      (i+1 < n) ? '✓' : (i+1);
+    el.className = 'step-indicator' + (i+1 < n ? ' done' : i+1 === n ? ' active' : '');
+    el.querySelector('.step-dot').textContent = (i+1 < n) ? '✓' : (i+1);
   });
   state.currentStep = n;
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -873,458 +478,237 @@ function goStep2() {
   const name  = document.getElementById('name').value.trim();
   const email = document.getElementById('email').value.trim();
   let ok = true;
-
-  if (!name) {
-    showErr('err-name', true);
-    document.getElementById('name').classList.add('invalid');
-    ok = false;
-  } else { showErr('err-name', false); document.getElementById('name').classList.remove('invalid'); }
-
+  if (!name)  { showErr('err-name', true);  document.getElementById('name').classList.add('invalid');  ok = false; }
+  else        { showErr('err-name', false); document.getElementById('name').classList.remove('invalid'); }
   if (!email || !email.includes('@') || !email.includes('.')) {
-    showErr('err-email', true);
-    document.getElementById('email').classList.add('invalid');
-    ok = false;
-  } else { showErr('err-email', false); document.getElementById('email').classList.remove('invalid'); }
-
+    showErr('err-email', true);  document.getElementById('email').classList.add('invalid');  ok = false;
+  } else      { showErr('err-email', false); document.getElementById('email').classList.remove('invalid'); }
   if (ok) goStep(2);
 }
 
 async function goStep3() {
-  if (!state.ticketType) {
-    document.getElementById('err-ticket-type').style.display = 'block';
-    return;
-  }
-
+  if (!state.ticketType) { document.getElementById('err-ticket-type').style.display = 'block'; return; }
   if (state.ticketType === 'device') {
-    const serial = document.getElementById('serial').value.trim();
     if (!state.showingAlt) {
-      if (!serial) {
-        showErr('err-serial', true, 'Vul het toestelnummer in of kies de optie hieronder.');
-        return;
-      }
+      if (!document.getElementById('serial').value.trim()) { showErr('err-serial', true, 'Vul het toestelnummer in of kies de optie hieronder.'); return; }
       if (state.serialValid === null) await validateSerial();
       if (state.serialValid === false) return;
     } else {
       const altVal = state.altMode === 'sim' ? v('sim_number') : v('email_alt');
-      if (!altVal) {
-        document.getElementById(state.altMode === 'sim' ? 'sim_number' : 'email_alt').focus();
-        return;
-      }
+      if (!altVal) { document.getElementById(state.altMode === 'sim' ? 'sim_number' : 'email_alt').focus(); return; }
       await validateAlt(state.altMode, altVal);
       if (state.serialValid === false) return;
     }
   }
-
   if (state.ticketType === 'delivery') {
-    const order = v('order_number');
-    if (!order) {
-      showErr('err-order', true, 'Vul uw ordernummer in.');
-      document.getElementById('order_number').classList.add('invalid');
-      return;
-    }
+    if (!v('order_number')) { showErr('err-order', true, 'Vul uw ordernummer in.'); document.getElementById('order_number').classList.add('invalid'); return; }
     if (state.orderValid === null) await validateOrder();
     if (state.orderValid === false) return;
   }
-
   updateSummary();
   goStep(3);
 }
 
-// ── Ticket type selectie ──────────────────────────────────────
 function selectTicketType(type) {
   state.ticketType = type;
   document.getElementById('err-ticket-type').style.display = 'none';
-
-  // Pills
-  ['device','delivery','other'].forEach(t => {
-    document.getElementById('pill-' + t).classList.toggle('selected', t === type);
-  });
-
-  // Secties
+  ['device','delivery','other'].forEach(t => document.getElementById('pill-'+t).classList.toggle('selected', t === type));
   document.getElementById('section-device').style.display   = type === 'device'   ? 'block' : 'none';
   document.getElementById('section-delivery').style.display = type === 'delivery' ? 'block' : 'none';
   document.getElementById('section-other').style.display    = type === 'other'    ? 'block' : 'none';
 }
 
-// ── Order validatie ───────────────────────────────────────────
 let orderTimeout = null;
-
 function onOrderInput() {
-  state.orderValid = null;
-  clearOrderBadge();
-  clearTimeout(orderTimeout);
-  const val = v('order_number');
-  if (val.length >= 4) {
-    orderTimeout = setTimeout(validateOrder, 700);
-  }
+  state.orderValid = null; clearOrderBadge(); clearTimeout(orderTimeout);
+  if (v('order_number').length >= 4) orderTimeout = setTimeout(validateOrder, 700);
 }
 
 async function validateOrder() {
   const order = v('order_number');
   if (!order) return;
-
-  setOrderIcon('loading');
-  clearOrderBadge();
-
+  setOrderIcon('loading'); clearOrderBadge();
   try {
-    const res = await fetch(CONFIG.VALIDATE_ORDER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-lw-token': CONFIG.SECRET_TOKEN },
-      body: JSON.stringify({ order_number: order }),
-    });
+    const res  = await fetch(CONFIG.VALIDATE_ORDER_URL, { method:'POST', headers:{'Content-Type':'application/json','x-lw-token':CONFIG.SECRET_TOKEN}, body:JSON.stringify({order_number:order}) });
     const data = await res.json();
-
     if (data.exists) {
-      state.orderValid = true;
-      setOrderIcon('success');
-      showOrderBadge('ok', '✓ Bestelling gevonden');
-      showErr('err-order', false);
-      document.getElementById('order_number').classList.add('valid');
-      document.getElementById('order_number').classList.remove('invalid');
+      state.orderValid = true; setOrderIcon('success'); showOrderBadge('ok','✓ Bestelling gevonden');
+      showErr('err-order',false); document.getElementById('order_number').classList.replace('invalid','valid');
     } else {
-      state.orderValid = false;
-      setOrderIcon('error');
-      showOrderBadge('fail', '✗ Ordernummer niet gevonden. Controleer uw bevestigingsmail.');
-      document.getElementById('order_number').classList.remove('valid');
+      state.orderValid = false; setOrderIcon('error'); showOrderBadge('fail','✗ Ordernummer niet gevonden. Controleer uw bevestigingsmail.');
       document.getElementById('order_number').classList.add('invalid');
     }
-  } catch (e) {
-    state.orderValid = true;
-    setOrderIcon('');
-    showOrderBadge('warn', '⚠ Verificatie tijdelijk niet beschikbaar. U kunt toch verder.');
-  }
+  } catch(e) { state.orderValid = true; setOrderIcon(''); showOrderBadge('warn','⚠ Verificatie tijdelijk niet beschikbaar. U kunt toch verder.'); }
 }
 
 function setOrderIcon(type) {
   const icon = document.getElementById('orderIcon');
-  icon.className = 'input-icon';
-  if (type === 'loading') {
-    icon.className += ' loading';
-    icon.innerHTML = `<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12a8 8 0 018-8v8H4z"/></svg>`;
-  } else if (type === 'success') {
-    icon.className += ' success';
-    icon.innerHTML = `<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`;
-  } else if (type === 'error') {
-    icon.className += ' error';
-    icon.innerHTML = `<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>`;
-  } else {
-    icon.innerHTML = `<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>`;
-  }
+  icon.className = 'input-icon' + (type ? ' '+type : '');
+  const icons = { loading:`<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12a8 8 0 018-8v8H4z"/></svg>`, success:`<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`, error:`<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>` };
+  icon.innerHTML = icons[type] || `<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>`;
 }
-
-function showOrderBadge(type, msg) {
-  const b = document.getElementById('orderBadge');
-  b.className = 'validate-badge show ' + type;
-  b.textContent = msg;
-}
-function clearOrderBadge() {
-  const b = document.getElementById('orderBadge');
-  if (b) { b.className = 'validate-badge'; b.textContent = ''; }
-}
+function showOrderBadge(type,msg) { const b=document.getElementById('orderBadge'); b.className='validate-badge show '+type; b.textContent=msg; }
+function clearOrderBadge() { const b=document.getElementById('orderBadge'); if(b){b.className='validate-badge';b.textContent='';} }
 
 async function validateAlt(mode, value) {
-  showBadge('warn', 'Gegevens worden gecontroleerd...');
+  showBadge('warn','Gegevens worden gecontroleerd...');
   try {
-    const body = mode === 'sim' ? { sim_number: value } : { email: value };
-    const res = await fetch(CONFIG.VALIDATE_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-lw-token': CONFIG.SECRET_TOKEN },
-      body: JSON.stringify(body),
-    });
-    const data = await res.json();
+    const body = mode==='sim' ? {sim_number:value} : {email:value};
+    const data = await (await fetch(CONFIG.VALIDATE_URL, {method:'POST',headers:{'Content-Type':'application/json','x-lw-token':CONFIG.SECRET_TOKEN},body:JSON.stringify(body)})).json();
     if (data.multiple) {
-      // Meerdere toestellen op dit e-mailadres — stuur door naar serienummer of SIM
       state.serialValid = false;
-      showBadge('fail', 'Er staan meerdere toestellen op dit e-mailadres. Gebruik het toestelnummer of telefoonnummer van het toestel.');
-      // Schakel terug naar SIM-tab zodat klant makkelijk kan wisselen
+      showBadge('fail','Er staan meerdere toestellen op dit e-mailadres. Gebruik het toestelnummer of telefoonnummer van het toestel.');
       switchAlt('sim');
     } else if (data.exists) {
       state.serialValid = true;
       if (data.serial_number) document.getElementById('serial').value = data.serial_number;
-      showBadge('ok', 'Gegevens gevonden in onze database');
+      showBadge('ok','Gegevens gevonden in onze database');
     } else {
       state.serialValid = false;
-      showBadge('fail', mode === 'sim'
-        ? 'Telefoonnummer niet gevonden. Controleer het nummer en probeer opnieuw.'
-        : 'E-mailadres niet gevonden. Gebruik het adres waarmee het abonnement is aangemaakt.');
+      showBadge('fail', mode==='sim' ? 'Telefoonnummer niet gevonden. Controleer het nummer en probeer opnieuw.' : 'E-mailadres niet gevonden. Gebruik het adres waarmee het abonnement is aangemaakt.');
     }
-  } catch (e) {
-    state.serialValid = true;
-    showBadge('warn', 'Verificatie tijdelijk niet beschikbaar. U kunt toch verder.');
-  }
+  } catch(e) { state.serialValid = true; showBadge('warn','Verificatie tijdelijk niet beschikbaar. U kunt toch verder.'); }
 }
 
-// ════════════════════════════════════════════════════════
-//  TOESTELNUMMER VALIDATIE
-// ════════════════════════════════════════════════════════
 let validateTimeout = null;
-
 function onSerialInput() {
-  state.serialValid = null;
-  clearBadge();
-  clearTimeout(validateTimeout);
-  const val = document.getElementById('serial').value.trim();
-  if (val.length >= 8) {
-    validateTimeout = setTimeout(validateSerial, 700);
-  }
+  state.serialValid = null; clearBadge(); clearTimeout(validateTimeout);
+  if (document.getElementById('serial').value.trim().length >= 8) validateTimeout = setTimeout(validateSerial, 700);
 }
 
 async function validateSerial() {
   const serial = document.getElementById('serial').value.trim();
   if (!serial) return;
-
-  setIcon('loading');
-  clearBadge();
-
+  setIcon('loading'); clearBadge();
   try {
     let result;
-
     if (CONFIG.DEMO_MODE) {
-      // ── DEMO: simuleer API-respons ──
-      await new Promise(r => setTimeout(r, 900));
-      // Serienummers die beginnen met 17 = geldig (demo)
-      result = { exists: serial.startsWith('17'), device_name: 'Senior 4G' };
+      await new Promise(r => setTimeout(r,900));
+      result = {exists:serial.startsWith('17'), device_name:'Senior 4G'};
     } else {
-      const res = await fetch(CONFIG.VALIDATE_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-lw-token': CONFIG.SECRET_TOKEN,
-        },
-        body: JSON.stringify({ serial_number: serial }),
-      });
-      result = await res.json();
+      result = await (await fetch(CONFIG.VALIDATE_URL, {method:'POST',headers:{'Content-Type':'application/json','x-lw-token':CONFIG.SECRET_TOKEN},body:JSON.stringify({serial_number:serial})})).json();
     }
-
     if (result.exists) {
-      state.serialValid = true;
-      setIcon('success');
-      showBadge('ok',
-        '✓ Toestel gevonden' + (result.device_name ? ': ' + result.device_name : ''));
-      showErr('err-serial', false);
-      document.getElementById('serial').classList.add('valid');
-      document.getElementById('serial').classList.remove('invalid');
+      state.serialValid=true; setIcon('success');
+      showBadge('ok','✓ Toestel gevonden'+(result.device_name?': '+result.device_name:''));
+      showErr('err-serial',false); document.getElementById('serial').classList.add('valid'); document.getElementById('serial').classList.remove('invalid');
     } else {
-      state.serialValid = false;
-      setIcon('error');
-      showBadge('fail', '✗ Toestelnummer niet gevonden in onze database.');
-      showErr('err-serial', true,
-        'Controleer het nummer op de sticker. Kloppen alle cijfers?');
-      document.getElementById('serial').classList.remove('valid');
-      document.getElementById('serial').classList.add('invalid');
+      state.serialValid=false; setIcon('error');
+      showBadge('fail','✗ Toestelnummer niet gevonden in onze database.');
+      showErr('err-serial',true,'Controleer het nummer op de sticker. Kloppen alle cijfers?');
+      document.getElementById('serial').classList.remove('valid'); document.getElementById('serial').classList.add('invalid');
     }
-  } catch (e) {
-    state.serialValid = null;
-    setIcon('');
-    showBadge('warn', '⚠ Validatie tijdelijk niet beschikbaar. U kunt toch verder.');
-    showErr('err-serial', false);
-  }
+  } catch(e) { state.serialValid=null; setIcon(''); showBadge('warn','⚠ Validatie tijdelijk niet beschikbaar. U kunt toch verder.'); showErr('err-serial',false); }
 }
 
 function setIcon(type) {
   const icon = document.getElementById('serialIcon');
-  icon.className = 'input-icon';
-  if (type === 'loading') {
-    icon.className += ' loading';
-    icon.innerHTML = `<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M4 12a8 8 0 018-8v8H4z"/>
-    </svg>`;
-  } else if (type === 'success') {
-    icon.className += ' success';
-    icon.innerHTML = `<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-    </svg>`;
-  } else if (type === 'error') {
-    icon.className += ' error';
-    icon.innerHTML = `<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-    </svg>`;
-  } else {
-    icon.innerHTML = `<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2m-2 5h8"/>
-    </svg>`;
-  }
+  icon.className = 'input-icon' + (type ? ' '+type : '');
+  const icons = { loading:`<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12a8 8 0 018-8v8H4z"/></svg>`, success:`<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`, error:`<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>` };
+  icon.innerHTML = icons[type] || `<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2m-2 5h8"/></svg>`;
 }
+function showBadge(type,msg) { const b=document.getElementById('serialBadge'); b.className='validate-badge show '+type; b.textContent=msg; }
+function clearBadge() { const b=document.getElementById('serialBadge'); b.className='validate-badge'; b.textContent=''; }
 
-function showBadge(type, msg) {
-  const b = document.getElementById('serialBadge');
-  b.className = 'validate-badge show ' + type;
-  b.textContent = msg;
-}
-function clearBadge() {
-  const b = document.getElementById('serialBadge');
-  b.className = 'validate-badge';
-  b.textContent = '';
-}
-
-// ════════════════════════════════════════════════════════
-//  HELP ACCORDION
-// ════════════════════════════════════════════════════════
 function toggleHelp() {
-  const panel  = document.getElementById('helpPanel');
-  const toggle = document.getElementById('helpToggle');
-  const open   = panel.classList.toggle('open');
-  toggle.classList.toggle('open', open);
+  const open = document.getElementById('helpPanel').classList.toggle('open');
+  document.getElementById('helpToggle').classList.toggle('open', open);
 }
-
-// ════════════════════════════════════════════════════════
-//  GEEN TOESTELNUMMER – ALTERNATIEF PANEL
-// ════════════════════════════════════════════════════════
 function showAltPanel() {
   state.showingAlt = true;
   document.getElementById('altPanel').classList.add('show');
   document.getElementById('noDeviceBtn').style.display = 'none';
-  // Maak toestelnummerveld optioneel
   document.getElementById('serial').placeholder = 'Niet beschikbaar (optioneel)';
   clearBadge();
 }
-
 function switchAlt(mode) {
   state.altMode = mode;
-  document.getElementById('tab-sim').classList.toggle('active', mode === 'sim');
-  document.getElementById('tab-email-alt').classList.toggle('active', mode === 'email');
-  document.getElementById('alt-sim').classList.toggle('show', mode === 'sim');
-  document.getElementById('alt-email-alt').classList.toggle('show', mode === 'email');
+  document.getElementById('tab-sim').classList.toggle('active', mode==='sim');
+  document.getElementById('tab-email-alt').classList.toggle('active', mode==='email');
+  document.getElementById('alt-sim').classList.toggle('show', mode==='sim');
+  document.getElementById('alt-email-alt').classList.toggle('show', mode==='email');
 }
-
-// ════════════════════════════════════════════════════════
-//  CATEGORIE PILLS
-// ════════════════════════════════════════════════════════
 function selectPill(el) {
   document.querySelectorAll('#categoryGroup .pill').forEach(p => p.classList.remove('selected'));
   el.classList.add('selected');
   state.category = el.textContent.trim();
 }
 
-// ════════════════════════════════════════════════════════
-//  SAMENVATTING (stap 3)
-// ════════════════════════════════════════════════════════
 function updateSummary() {
   const rows = [
-    ['Naam', v('name')],
-    ['E-mail', v('email')],
-    ['Telefoon', v('phone') || '–'],
-    ['Type', state.ticketType === 'device' ? 'Bestaand toestel' : state.ticketType === 'delivery' ? 'Levering / bestelling' : 'Overig'],
-    ['Toestel', state.ticketType === 'device' ? (v('serial') || (state.showingAlt
-      ? (state.altMode === 'sim' ? 'SIM: ' + v('sim_number') : 'E-mail: ' + v('email_alt'))
-      : '–')) : (state.ticketType === 'delivery' ? 'Order: ' + v('order_number') : '–')],
+    ['Naam',      v('name')],
+    ['E-mail',    v('email')],
+    ['Telefoon',  v('phone') || '–'],
+    ['Type',      state.ticketType==='device' ? 'Bestaand toestel' : state.ticketType==='delivery' ? 'Levering / bestelling' : 'Overig'],
+    ['Toestel',   state.ticketType==='device'
+      ? (v('serial') || (state.showingAlt ? (state.altMode==='sim' ? 'SIM: '+v('sim_number') : 'E-mail: '+v('email_alt')) : '–'))
+      : (state.ticketType==='delivery' ? 'Order: '+v('order_number') : '–')],
     ['Categorie', state.category || '–'],
   ];
+
   document.getElementById('summaryContent').innerHTML = rows.map(([k, val]) =>
-    `<div style="display:flex;gap:8px;padding:3px 0;border-bottom:1px solid var(--border)">
-       <span style="min-width:90px;font-weight:600;color:var(--text-muted);font-size:12px">${k}</span>
-       <span>${val}</span>
+    `<div style="display:flex;gap:8px;padding:3px 0;border-bottom:1px solid var(--border);min-width:0">
+       <span style="min-width:80px;flex-shrink:0;font-weight:600;color:var(--text-muted);font-size:12px">${k}</span>
+       <span style="flex:1;min-width:0;overflow-wrap:break-word;word-break:break-all;font-size:12px;color:var(--text)">${val}</span>
      </div>`
   ).join('') +
   `<div style="padding:3px 0;margin-top:2px">
      <div style="font-weight:600;color:var(--text-muted);font-size:12px;margin-bottom:4px">Beschrijving</div>
-     <div style="color:var(--text-muted);font-size:12px">${v('description') || '–'}</div>
+     <div style="color:var(--text-muted);font-size:12px;overflow-wrap:break-word">${v('description') || '–'}</div>
    </div>`;
 }
 
-// update samenvatting live terwijl klant typt
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('description').addEventListener('input', () => {
     if (state.currentStep === 3) updateSummary();
   });
 });
 
-// ════════════════════════════════════════════════════════
-//  SUBMIT
-// ════════════════════════════════════════════════════════
 async function submitForm() {
   const desc = v('description');
-  if (!desc.trim()) {
-    showErr('err-desc', true);
-    return;
-  }
-  showErr('err-desc', false);
-
+  if (!desc.trim()) { showErr('err-desc',true); return; }
+  showErr('err-desc',false);
   const btn = document.getElementById('btnSubmit');
   btn.disabled = true;
   btn.innerHTML = `<svg class="input-icon loading" style="position:static;transform:none;animation:spin .8s linear infinite" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12a8 8 0 018-8v8H4z"/></svg> Verzenden...`;
 
   const payload = {
-    name:        v('name'),
-    email:       v('email'),
-    phone:       v('phone'),
-    serial:      v('serial'),
-    alt_sim:     v('sim_number'),
-    alt_email:   v('email_alt'),
-    alt_mode:    state.showingAlt ? state.altMode : null,
-    ticket_type: state.ticketType,
-    order_number: v('order_number'),
-    transcript: state.transcript,
-    category:    state.category,
-    description: desc,
-    source:      'chatbot-form',
-    timestamp:   new Date().toISOString(),
+    name:         v('name'),   email:       v('email'),
+    phone:        v('phone'),  serial:      v('serial'),
+    alt_sim:      v('sim_number'), alt_email: v('email_alt'),
+    alt_mode:     state.showingAlt ? state.altMode : null,
+    ticket_type:  state.ticketType, order_number: v('order_number'),
+    transcript:   state.transcript, category:     state.category,
+    description:  desc, source: 'chatbot-form', timestamp: new Date().toISOString(),
   };
 
   try {
     let ticketId = 'DEMO-' + Math.floor(Math.random() * 90000 + 10000);
-
     if (!CONFIG.DEMO_MODE) {
-      const res = await fetch(CONFIG.SUBMIT_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-lw-token': CONFIG.SECRET_TOKEN,
-        },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
+      const data = await (await fetch(CONFIG.SUBMIT_URL, {method:'POST',headers:{'Content-Type':'application/json','x-lw-token':CONFIG.SECRET_TOKEN},body:JSON.stringify(payload)})).json();
       if (data.ticket_id) ticketId = data.ticket_id;
     } else {
-      await new Promise(r => setTimeout(r, 1200));
+      await new Promise(r => setTimeout(r,1200));
     }
-
-    // Toon success scherm
     document.getElementById('step-3').style.display = 'none';
     document.getElementById('progressBar').style.display = 'none';
     document.getElementById('successScreen').classList.add('show');
     document.getElementById('confirmEmail').textContent = v('email');
-
-    // ── postMessage naar Voiceflow / parent ──
-    // Voiceflow vangt dit op via een Custom Action step
     if (CONFIG.VF_VARIABLES) {
-      window.parent.postMessage({
-        type: 'lw_ticket_submitted',
-        payload: {
-          ...payload,
-          ticket_id: ticketId,
-        }
-      }, '*');
-
-      // Ook als Voiceflow webchat SDK beschikbaar is:
-      if (window.voiceflow && window.voiceflow.chat) {
-        window.voiceflow.chat.interact({
-          type: 'complete',
-          payload: { ticket_id: ticketId, email: v('email') }
-        });
+      window.parent.postMessage({ type:'lw_ticket_submitted', payload:{...payload, ticket_id:ticketId} }, '*');
+      if (window.voiceflow?.chat) {
+        window.voiceflow.chat.interact({ type:'complete', payload:{ticket_id:ticketId, email:v('email')} });
       }
     }
-
-  } catch (e) {
+  } catch(e) {
     btn.disabled = false;
     btn.innerHTML = `Melding verzenden <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>`;
-    showBadge('fail', '✗ Er is iets misgegaan. Probeer het opnieuw.');
+    showBadge('fail','✗ Er is iets misgegaan. Probeer het opnieuw.');
   }
 }
 
-// ════════════════════════════════════════════════════════
-//  HELPERS
-// ════════════════════════════════════════════════════════
-function v(id) {
-  const el = document.getElementById(id);
-  return el ? el.value.trim() : '';
-}
-function showErr(id, show, msg) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.classList.toggle('show', show);
-  if (msg) el.textContent = msg;
-}
+function v(id) { const el=document.getElementById(id); return el ? el.value.trim() : ''; }
+function showErr(id,show,msg) { const el=document.getElementById(id); if(!el)return; el.classList.toggle('show',show); if(msg)el.textContent=msg; }
 </script>
 </body>
 </html>
