@@ -576,9 +576,22 @@ function onSerialInput() {
   if (document.getElementById('serial').value.trim().length >= 8) validateTimeout = setTimeout(validateSerial, 700);
 }
 
-async function validateSerial() {
+  async function validateSerial() {
   const serial = document.getElementById('serial').value.trim();
   if (!serial) return;
+
+  // Regex check op geldig toestelnummer formaat
+  const validFormat = /^((09|17)\d{8}|(35|86)\d{13}|[A-Za-z0-9]{8})$/.test(serial);
+  if (!validFormat) {
+    setIcon('error');
+    showBadge('fail', '✗ Ongeldig toestelnummer formaat. Controleer de sticker op uw toestel.');
+    showErr('err-serial', true, 'Het toestelnummer heeft een ongeldig formaat.');
+    document.getElementById('serial').classList.add('invalid');
+    document.getElementById('serial').classList.remove('valid');
+    state.serialValid = false;
+    return;
+  }
+
   setIcon('loading'); clearBadge();
   try {
     let result;
