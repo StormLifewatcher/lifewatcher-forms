@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LifeWatcher Chatbot – Testpagina</title>
+  <style>
+    body { font-family: sans-serif; background: #f0f4f8; margin: 0; padding: 40px; color: #1a2b45; }
+    h1 { font-size: 20px; margin-bottom: 4px; }
+    p  { font-size: 14px; color: #6b7b90; margin-bottom: 32px; }
+
+    #debug {
+      position: fixed; bottom: 50px; left: 20px;
+      background: #1a2b45; color: #a8d8a8; font-family: monospace; font-size: 12px;
+      padding: 14px; border-radius: 10px; width: 400px; max-height: 320px;
+      overflow-y: auto; white-space: pre-wrap; z-index: 9999;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    #debug-title { color: #7ecfff; font-weight: bold; margin-bottom: 8px; display: block; }
+    #btn-row { position: fixed; bottom: 16px; left: 20px; display: flex; gap: 8px; z-index: 9999; }
+    .dbg-btn {
+      border: none; border-radius: 6px; padding: 6px 12px;
+      font-size: 12px; cursor: pointer; color: white;
+    }
+    #clear-btn  { background: #6b7b90; }
+    #manual-btn { background: #1e6fd9; }
+  </style>
+</head>
+<body>
+
+<h1>LifeWatcher Chatbot – Testpagina</h1>
+<p>Voer een gesprek met de chatbot en doorloop het formulier. Het debug venster linksonder toont live wat er gebeurt.</p>
+
+<div id="debug">
+  <span id="debug-title">🔍 Debug log</span><span id="debug-output">Wacht op gesprek...</span>
+</div>
+<div id="btn-row">
+  <button class="dbg-btn" id="clear-btn"  onclick="document.getElementById('debug-output').textContent=''">Wis log</button>
+  <button class="dbg-btn" id="manual-btn" onclick="log('Transcript nu:\n' + buildLWTranscript())">Toon transcript nu</button>
+</div>
+
+<script>
+  function log(msg) {
+    const el = document.getElementById('debug-output');
+    el.textContent += '\n' + msg;
+    el.scrollTop = el.scrollHeight;
+  }
+
+  function buildLWTranscript() {
+    try {
+      const sessionKey = Object.keys(localStorage)
+        .find(k => k.startsWith('voiceflow-session-'));
+
+      if (!sessionKey) { log('Geen session gevonden in localStorage'); return ''; }
+
+      const session = JSON.parse(localStorage.getItem(sessionKey));
+      const turns   = session?.turns;
+      if (!Array.isArray(turns) || turns.length === 0) { log('Session leeg'); return ''; }
+
+      const lines = [];
+      for (const turn of turns) {
+        if (turn.type === 'user' && turn.message) {
+          lines.push('Klant: ' + turn.message.trim());
+        } else if (turn.type === 'system' && Array.isArray(turn.messages)) {
+          for (const msg of turn.messages) {
+            if (msg.type === 'text' && msg.text) {
+              lines.push('LifeWatcher Bot: ' + msg.text.trim());
+            }
+          }
+        }
+      }
+
+      if (lines.length === 0) { log('Geen berichten gevonden in turns'); return ''; }
+      return lines.join('\n');
+
+    } catch (e) {
+      log('Transcript fout: ' + e.message);
+      return '';
+    }
+  }
+
+  const LifeWatcherTicketExtension = {
+    name: 'LifeWatcherTicket',
+    type: 'response',
+    match: ({ trace }) =>
+      trace.type === 'lw_ticket_form' ||
+      trace.payload?.name === 'lw_ticket_form',
+
+    render: ({ trace, element }) => {
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://stormlifewatcher.github.io/lifewatcher-forms/lifewatcher-ticket-form.html';
+      iframe.style.cssText = 'width:100%;height:620px;border:none;border-radius:12px;margin-top:8px;display:block';
+
+      iframe.addEventListener('load', () => {
+        const transcript = buildLWTranscript();
+        log('Transcript (' + transcript.split('\n').filter(Boolean).length + ' regels) verstuurd:\n' + transcript);
+
+        iframe.contentWindow.postMessage(
+          { type: 'lw_set_transcript', transcript },
+          '*'
+        );
+      });
+
+      element.appendChild(iframe);
+
+      function onMessage(event) {
+        if (!event.data || event.data.type !== 'lw_ticket_submitted') return;
+        const p = event.data.payload || {};
+        log('Ticket ingediend:\n' + JSON.stringify(p, null, 2));
+        window.voiceflow.chat.interact({
+          type: 'complete',
+          payload: {
+            ticket_id:   p.ticket_id   || '',
+            email:       p.email       || '',
+            name:        p.name        || '',
+            serial:      p.serial      || '',
+            category:    p.category    || '',
+            description: p.description || '',
+          }
+        });
+        window.removeEventListener('message', onMessage);
+      }
+
+      window.addEventListener('message', onMessage);
+    }
+  };
+</script>
+
+<script type="text/javascript">
+  (function(d, t) {
+    var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+    v.onload = function() {
+      window.voiceflow.chat.load({
+        verify: { projectID: '69a94a1102cd5f2a8ac1d0c2' },
+        url: 'https://general-runtime.voiceflow.com',
+        versionID: 'production',
+        allowDangerousHTML: true,
+        voice: { url: 'https://runtime-api.voiceflow.com' },
+        assistant: { extensions: [LifeWatcherTicketExtension] }
+      });
+    };
+    v.src = 'https://cdn.voiceflow.com/widget-next/bundle.mjs';
+    v.type = 'text/javascript';
+    s.parentNode.insertBefore(v, s);
+  })(document, 'script');
+</script>
+
+</body>
+</html>
