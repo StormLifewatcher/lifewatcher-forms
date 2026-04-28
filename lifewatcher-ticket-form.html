@@ -447,6 +447,7 @@ const CONFIG = {
 const state = {
   currentStep: 1,
   serialValid: null,
+  serialFromDB: false,   // WIJZIGING 1: vlag voor serial via database lookup
   orderValid:  null,
   altMode:     'sim',
   showingAlt:  false,
@@ -557,28 +558,42 @@ async function validateAlt(mode, value) {
     const data = await (await fetch(CONFIG.VALIDATE_URL, {method:'POST',headers:{'Content-Type':'application/json','x-lw-token':CONFIG.SECRET_TOKEN},body:JSON.stringify(body)})).json();
     if (data.multiple) {
       state.serialValid = false;
+      state.serialFromDB = false;
       showBadge('fail','Er staan meerdere toestellen op dit e-mailadres. Gebruik het toestelnummer of telefoonnummer van het toestel.');
       switchAlt('sim');
     } else if (data.exists) {
       state.serialValid = true;
-      if (data.serial_number) document.getElementById('serial').value = data.serial_number;
+      state.serialFromDB = true;  // WIJZIGING 3: serial komt uit DB, geen regex nodig
+      if (data.serial_number) {
+        document.getElementById('serial').value = data.serial_number;
+        document.getElementById('serial').classList.add('valid');
+        document.getElementById('serial').classList.remove('invalid');
+      }
       showBadge('ok','Gegevens gevonden in onze database');
     } else {
       state.serialValid = false;
-      showBadge('fail', mode==='sim' ? 'Telefoonnummer niet gevonden. Controleer het nummer en probeer opnieuw.' : 'E-mailadres niet gevonden. Gebruik het adres waarmee het abonnement is aangemaakt.');
+      state.serialFromDB = false;
+      // WIJZIGING 3: specifieke foutmelding voor SIM niet gevonden
+      showBadge('fail', mode==='sim'
+        ? 'Wij konden geen toestel vinden op dit telefoonnummer. Controleer het nummer en probeer het opnieuw.'
+        : 'E-mailadres niet gevonden. Gebruik het adres waarmee het abonnement is aangemaakt.');
     }
-  } catch(e) { state.serialValid = true; showBadge('warn','Verificatie tijdelijk niet beschikbaar. U kunt toch verder.'); }
+  } catch(e) { state.serialValid = true; state.serialFromDB = false; showBadge('warn','Verificatie tijdelijk niet beschikbaar. U kunt toch verder.'); }
 }
 
 let validateTimeout = null;
 function onSerialInput() {
-  state.serialValid = null; clearBadge(); clearTimeout(validateTimeout);
+  state.serialValid = null;
+  state.serialFromDB = false;  // WIJZIGING 2: reset vlag bij handmatige invoer
+  clearBadge(); clearTimeout(validateTimeout);
   if (document.getElementById('serial').value.trim().length >= 8) validateTimeout = setTimeout(validateSerial, 700);
 }
 
-  async function validateSerial() {
+async function validateSerial() {
   const serial = document.getElementById('serial').value.trim();
   if (!serial) return;
+
+  if (state.serialFromDB) return;  // WIJZIGING 4: sla regex over als serial uit DB komt
 
   // Regex check op geldig toestelnummer formaat
   const validFormat = /^((09|17)\d{8}|(35|86)\d{13}|[A-Za-z0-9]{8})$/.test(serial);
